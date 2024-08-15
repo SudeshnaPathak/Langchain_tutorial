@@ -3,10 +3,13 @@ from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import os
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.embeddings import OpenAIEmbeddings
 import google.generativeai as genai
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 from langchain.chains.question_answering import load_qa_chain
 import time
@@ -14,7 +17,8 @@ import time
 
 
 load_dotenv()
-genai.configure(api_key = os.getenv("GOOGLE_API_KEY"))
+# genai.configure(api_key = os.getenv("GOOGLE_API_KEY"))
+os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -30,30 +34,36 @@ def get_text_chunks(text):
     return chunks
 
 def get_vector_store(text_chunks):
-    embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
+    # embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
+    embeddings = OpenAIEmbeddings()
+    #model = "gpt-3.5-turbo-0125"
     vector_store = FAISS.from_texts(text_chunks , embedding = embeddings)
-    vector_store.save_local("faiss_index")
-    
+    vector_store.save_local("faiss_index_openai")
+    return vector_store
 
 def get_conversational_chain():
      prompt_template = """
-    Answer the question as detailed as possible from the provided context, make sure to provide all the details, if the answer is not in
-    provided context just say, "answer is not available in the context", don't provide the wrong answer\n\n
-    Context:\n {context}?\n
-    Question: \n{question}\n
-
-    Answer:
-    """
-     model = ChatGoogleGenerativeAI(model="gemini-1.5-flash" , temeperature = 0.3)
+        Answer the following question based only on the provided context. 
+        Think step by step before providing an answer,make sure to provide all the details
+        I will tip you $1000 if the user finds the answer helpful.
+        if the answer is not in provided context just say, "answer is not available in the context", don't provide the wrong answer\n\n 
+        <context>
+        {context}
+        </context>
+        Question: {question}"""
+     llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+    #  model = ChatGoogleGenerativeAI(model="gemini-1.5-flash" , temeperature = 0.3)
      prompt = PromptTemplate(template = prompt_template , input_variables={"context","question"})
-     chain = load_qa_chain(model , chain_type="stuff" , prompt=prompt)
+    #  chain = load_qa_chain(model , chain_type="stuff" , prompt=prompt)
+     chain = load_qa_chain(llm , chain_type="stuff" , prompt=prompt)
      return chain
 
 def user_input(user_question):
     start_time = time.time()
-    embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
+    # embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
+    # embeddings = OpenAIEmbeddings()
     
-    new_db = FAISS.load_local("faiss_index", embeddings,allow_dangerous_deserialization=True)
+    new_db = st.session_state.get("vector_store")
     docs = new_db.similarity_search(user_question)
 
     chain = get_conversational_chain()
@@ -81,11 +91,13 @@ def main():
         pdf_docs = st.file_uploader("Upload your PDF Files and Click on the Submit & Process Button", accept_multiple_files=True)
         if st.button("Submit & Process"):
             with st.spinner("Processing..."):
+                start_time = time.time()
                 raw_text = get_pdf_text(pdf_docs)
                 text_chunks = get_text_chunks(raw_text)
-                get_vector_store(text_chunks)            
-                st.success("Done")
-                
+                vector_store = get_vector_store(text_chunks)
+                st.session_state.vector_store = vector_store
+                st.success(f"Done \n Time Taken: {time.time() - start_time}" )
+               
 
 
 
