@@ -19,6 +19,8 @@ import time
 load_dotenv()
 # genai.configure(api_key = os.getenv("GOOGLE_API_KEY"))
 os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY")
+os.environ["LANGCHAIN_TRACING_V2"]="true"
+os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 
 def get_pdf_text(pdf_docs):
     text = ""
