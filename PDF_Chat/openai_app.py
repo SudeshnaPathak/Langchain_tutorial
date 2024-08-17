@@ -45,7 +45,7 @@ def get_vector_store(text_chunks):
 
 def get_conversational_chain():
      prompt_template = """
-        Answer the following question based only on the provided context. 
+        Answer the following question in a detailed manner based only on the provided context. 
         Think step by step before providing an answer,make sure to provide all the details
         I will tip you $1000 if the user finds the answer helpful.
         if the answer is not in provided context just say, "answer is not available in the context", don't provide the wrong answer\n\n 
@@ -81,7 +81,7 @@ def user_input(user_question):
 
 def main():
     st.set_page_config("Chat with multiple PDFs")
-    st.header("Chat with multiple PDFs using Gemini💁")
+    st.header("Chat with multiple PDFs using GPT💁")
 
     user_question = st.text_input("Ask a Question from the PDF Files")
 
