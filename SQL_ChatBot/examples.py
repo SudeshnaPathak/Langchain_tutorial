@@ -1,6 +1,13 @@
 from langchain_community.vectorstores import FAISS
 from langchain_core.example_selectors import SemanticSimilarityExampleSelector
 from langchain_openai import OpenAIEmbeddings
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+LANGCHAIN_TRACING_V2 = os.getenv("LANGCHAIN_TRACING_V2")
+LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
 
 examples = [
     {

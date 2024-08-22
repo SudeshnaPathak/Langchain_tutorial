@@ -9,6 +9,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from table_details import table_chain 
 from prompts import final_prompt, answer_prompt
+import time
 
 load_dotenv()
 
@@ -16,7 +17,7 @@ db_user = os.getenv("db_user")
 db_password = os.getenv("db_password")
 db_host = os.getenv("db_host")
 db_name = os.getenv("db_name")
-db = SQLDatabase.from_uri(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
+
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 LANGCHAIN_TRACING_V2 = os.getenv("LANGCHAIN_TRACING_V2")
@@ -26,12 +27,12 @@ llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 
 def get_chain():
     print("Creating chain")
+    db = SQLDatabase.from_uri(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
     generate_query = create_sql_query_chain(llm, db,final_prompt) 
     execute_query = QuerySQLDataBaseTool(db=db)
     rephrase_answer = answer_prompt | llm | StrOutputParser()
-    # chain = generate_query | execute_query
     chain = (
-    RunnablePassthrough.assign(table_names_to_use=table_chain) |
+    RunnablePassthrough.assign(selected_tables=table_chain) |
     RunnablePassthrough.assign(query=generate_query).assign(
         result=itemgetter("query") | execute_query
         )
@@ -39,3 +40,12 @@ def get_chain():
     )
 
     return chain
+
+if __name__ == "__main__":
+    chain = get_chain()
+    while True:
+        start_time = time.time()
+        question = input("Enter a Question: ")
+        result = chain.invoke({"question": question})
+        print(result)
+        print("Time Taken: " , time.time() - start_time)

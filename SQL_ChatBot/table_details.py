@@ -2,10 +2,17 @@ import pandas as pd
 from langchain_core.output_parsers.openai_tools import PydanticToolsParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
-from prompts import table_final_prompt
 from langchain_openai import ChatOpenAI
 from operator import itemgetter
 from typing import List
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+LANGCHAIN_TRACING_V2 = os.getenv("LANGCHAIN_TRACING_V2")
+LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
 
 
 llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
@@ -27,8 +34,23 @@ class Table(BaseModel):
     name: str = Field(description="Name of table in SQL database.")
 
 
+table_details = get_table_details()
 
-final_table_prompt = table_final_prompt
+system = f"""Return the names of ALL the SQL tables that MIGHT be relevant to the user question. \
+The tables details are:
+
+{table_details}
+
+Remember to include ALL POTENTIALLY RELEVANT tables, even if you're not sure that they're needed."""
+
+final_table_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system),
+        ("human", "{input}"),
+    ]
+)
+
+
 llm_with_tools = llm.bind_tools([Table])
 output_parser = PydanticToolsParser(tools=[Table])
 
@@ -41,3 +63,4 @@ def get_tables(tables: List[Table]) -> List[str]:
     return table_names
 
 table_chain = {"input": itemgetter("question")} | table_select_chain| get_tables
+
