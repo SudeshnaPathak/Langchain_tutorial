@@ -5,14 +5,12 @@ from dotenv import load_dotenv
 from langchain_community.utilities.sql_database import SQLDatabase
 load_dotenv()
 
-db_user = os.getenv("db_user")
-db_password = os.getenv("db_password")
-db_host = os.getenv("db_host")
-db_name = os.getenv("db_name")
-db = SQLDatabase.from_uri(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
+# db_user = os.getenv("db_user")
+# db_password = os.getenv("db_password")
+# db_host = os.getenv("db_host")
+# db_name = os.getenv("db_name")
+# db = SQLDatabase.from_uri(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
 
-context = db.get_context()
-table_info = context["table_info"]
 
 example_prompt = ChatPromptTemplate.from_messages(
      [
