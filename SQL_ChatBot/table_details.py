@@ -2,6 +2,7 @@ import pandas as pd
 from langchain_core.output_parsers.openai_tools import PydanticToolsParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain.chains.openai_tools import create_extraction_chain_pydantic
 from langchain_openai import ChatOpenAI
 from operator import itemgetter
 from typing import List
@@ -50,11 +51,22 @@ final_table_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+table_details_prompt = f"""Given the following SQL tables:
 
-llm_with_tools = llm.bind_tools([Table])
-output_parser = PydanticToolsParser(tools=[Table])
+{table_details}
 
-table_select_chain = final_table_prompt | llm_with_tools | output_parser
+Return the names of ALL the SQL tables that MIGHT be relevant to the user's question. 
+Remember to include ALL POTENTIALLY RELEVANT tables, even if you're not sure that they're needed.
+User's question: "{input}"
+
+"""
+
+
+# llm_with_tools = llm.bind_tools([Table])
+# output_parser = PydanticToolsParser(tools=[Table])
+# table_select_chain = final_table_prompt | llm_with_tools | output_parser
+
+table_select_chain = create_extraction_chain_pydantic(Table, llm, system_message=table_details_prompt)
 
 def get_tables(tables: List[Table]) -> List[str]:
     tables  = [table.name for table in tables]
