@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-from typing import List
+from typing import List, Union
 
 from fastapi import FastAPI
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate,MessagesPlaceholder
+from langchain.schema import SystemMessage, HumanMessage, AIMessage
+from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
 from langserve import add_routes
@@ -17,11 +19,13 @@ os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 
 
 # 1. Create prompt template
-system_template = "Translate the following into {language}:"
-prompt_template = ChatPromptTemplate.from_messages([
-    ('system', system_template),
-    ('user', '{text}')
-])
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system" , "You are a helpful assistant.Please respond to user queries."),
+         MessagesPlaceholder(variable_name="messages"),
+        ("human" , "Question : {question}")
+    ]
+)
 
 # 2. Create model
 model = ChatOpenAI()
@@ -30,8 +34,15 @@ model = ChatOpenAI()
 parser = StrOutputParser()
 
 # 4. Create chain
-chain = prompt_template | model | parser
+chain = prompt | model | parser
 
+class InputChat(BaseModel):
+    """Input for the chat endpoint."""
+
+    messages: List[Union[HumanMessage, AIMessage, SystemMessage]] = Field(
+        ...,
+        description="The chat messages representing the current conversation.",
+    )
 
 # 4. App definition
 app = FastAPI(
@@ -44,8 +55,11 @@ app = FastAPI(
 
 add_routes(
     app,
-    chain,
+    chain.with_types(input_type=InputChat),
     path="/chain",
+    enable_feedback_endpoint=True,
+    enable_public_trace_link_endpoint=True,
+    playground_type='chat'
 )
 
 if __name__ == "__main__":

@@ -70,13 +70,18 @@ def user_input(user_question):
 
     chain = get_conversational_chain()
 
-    response = chain(
-        {"input_documents":docs, "question": user_question}
-        , return_only_outputs=True)
+    placeholder = st.empty()
+
+    response = ""
+    for r in chain.stream(
+        {"input_documents": docs, "question": user_question},
+        return_only_outputs=True):
+        response += r["output_text"]
+        time.sleep(1)
+        placeholder.write(response)
     
-    
-    print(response)
-    st.write("Reply: ", response["output_text"])
+    # print(response)
+    # st.write("Reply: ", response["output_text"])
     st.write("Time taken: ", time.time() - start_time)
 
 def main():

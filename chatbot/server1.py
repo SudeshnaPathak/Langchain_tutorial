@@ -51,6 +51,7 @@ add_routes(
     app,
     chain,
     path="/chain",
+    playground_type='chat'
 )
 
 if __name__ == "__main__":
