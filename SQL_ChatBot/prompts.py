@@ -5,11 +5,6 @@ from dotenv import load_dotenv
 from langchain_community.utilities.sql_database import SQLDatabase
 load_dotenv()
 
-# db_user = os.getenv("db_user")
-# db_password = os.getenv("db_password")
-# db_host = os.getenv("db_host")
-# db_name = os.getenv("db_name")
-# db = SQLDatabase.from_uri(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
 
 
 example_prompt = ChatPromptTemplate.from_messages(
@@ -29,8 +24,9 @@ few_shot_prompt = FewShotChatMessagePromptTemplate(
 
 final_prompt = ChatPromptTemplate.from_messages(
      [
-         ("system", "You are a MySQL expert. Given an input question, create a syntactically correct MySQL query to run. Unless otherwise specificed.\nHere are the tables info : {table_info}\nHere are the tables that you can refer to : {selected_tables}\n\nBelow are a number of examples of questions and their corresponding SQL queries. Those examples are just for reference and should be considered while answering follow up questions"),
+         ("system", "You are a MySQL expert. Given an input question, create a syntactically correct MySQL query to run. Unless otherwise specificed.\nHere are the tables info : {table_info}\nHere are the tables that you can refer to : {selected_tables}\n\nBelow are a number of examples of questions and their corresponding SQL queries. Those examples are just for reference and should be considered while answering follow up questions.In case of 2 or more tables with same coloumn name ,while displaying the details , if asked for , you should display it from any one of the tables without any ambiguity.If asked for details regarding any table , do specify that you are not supposed to reveal internal details and then give the details."),
          few_shot_prompt,
+         MessagesPlaceholder(variable_name="messages"),
          ("human", "{input}"),
      ]
       
@@ -38,7 +34,7 @@ final_prompt = ChatPromptTemplate.from_messages(
 
 
 answer_prompt = PromptTemplate.from_template(
-     """Given the following user question, corresponding SQL query, and SQL result, answer the user question.
+     """Given the following user question, corresponding SQL query, and SQL result, answer the user question to the best of your ability in proper {language}.
 
  Question: {question}
  SQL Query: {query}

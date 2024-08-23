@@ -48,6 +48,6 @@ if __name__ == "__main__":
     while True:
         question = input("Enter a Question: ")
         start_time = datetime.datetime.now()
-        result = chain.invoke({"question": question , "table_info": table_info})
+        result = chain.invoke({"question": question})
         print(result)
-        print("Time Taken: " , datetime.datetime.now() - start_time)
+        print("Time Taken: " , datetime.datetime.now() - start_time) 
