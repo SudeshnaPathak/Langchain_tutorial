@@ -51,19 +51,6 @@ trimmer = trim_messages(
     start_on="human",
 )
 
-# -- Create the prompt template --
-prompt = ChatPromptTemplate(
-  [
-    (
-      "system",
-      "You are a helpful assistant. Answer all questions to the best of your ability in {language}",
-    ),
-    MessagesPlaceholder(variable_name="messages")
-  ]
-)
-
-# -- Create parser --
-parser = StrOutputParser()
 
 sql_chain = get_chain()
 # -- Create chain --
@@ -133,6 +120,8 @@ async def get_response(request: QueryRequest):
   print("Response: " + str(response))
   
   return {"response": response}
+
+
 
 if __name__ == "__main__":
   import multiprocessing

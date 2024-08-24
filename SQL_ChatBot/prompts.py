@@ -34,7 +34,7 @@ final_prompt = ChatPromptTemplate.from_messages(
 
 
 answer_prompt = PromptTemplate.from_template(
-     """Given the following user question, corresponding SQL query, and SQL result, answer the user question to the best of your ability in proper {language}.Answer continuosly in one line, do not chnge lines 
+     """Given the following user question, corresponding SQL query, and SQL result, answer the user question to the best of your ability in proper {language}. In case of SQL results , convert it into a dataframe for displaying it to the user and for small answers , answer in a continuous  line.
 
  Question: {question}
  SQL Query: {query}
