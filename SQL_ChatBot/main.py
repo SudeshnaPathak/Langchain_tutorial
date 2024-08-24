@@ -1,13 +1,18 @@
 # -- import necessary libraries --
-from typing import List
+from typing import List, Any
 import datetime
 from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+from async_generator import async_generator , yield_
+import asyncio
+from langchain.callbacks.streaming_aiter import AsyncIteratorCallbackHandler
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.messages import HumanMessage, AIMessage, trim_messages
 from langchain_core.chat_history import BaseChatMessageHistory, InMemoryChatMessageHistory
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain.schema import LLMResult
 from langchain_openai import ChatOpenAI
 from langserve import add_routes
 import os
@@ -94,34 +99,98 @@ class QueryRequest(BaseModel):
 
 app = FastAPI()
 
+# Modify the get_response function to support streaming
 @app.post("/api/v1/query")
 async def get_response(request: QueryRequest):
-  print("\n======================================\n")
+    print("\n======================================\n")
 
-  # Extract the query from the request body
-  Question = request.question
-  Language = request.language
-  SessionId = request.sessionid
+    # Extract the query from the request body
+    Question = request.question
+    Language = request.language
+    SessionId = request.sessionid
 
-  print("Question   : " + str(Question))
-  print("Language   : " + str(Language))
-  print("Session ID : " + str(SessionId))
-  print("\n")
+    print("Question   : " + str(Question))
+    print("Language   : " + str(Language))
+    print("Session ID : " + str(SessionId))
+    print("\n")
 
-  response = chain_with_history.invoke(
-      {
-        "messages": [HumanMessage(content=Question)],
-        "language": Language,
-        "question": Question
-      },
-      config={"configurable": {"session_id": SessionId}},
-    )
+    # Function to generate response stream
+    @async_generator
+    async def response_generator():
+        for r in chain_with_history.stream(
+        {
+          "messages": [HumanMessage(content=Question)],
+          "language": Language,
+          "question": Question
+        },
+        config={"configurable": {"session_id": SessionId}},
+        ):
+            
+            await yield_(r)
+            await asyncio.sleep(0.1)
+            print(r)  # Simulate processing time or slow down for streaming
+
+    return StreamingResponse(response_generator(), media_type="text/event-stream") #text/event-stream
+
+
+
+# @app.post("/api/v1/query")
+# async def get_response(request: QueryRequest):
+#   print("\n======================================\n")
+
+#   # Extract the query from the request body
+#   Question = request.question
+#   Language = request.language
+#   SessionId = request.sessionid
+
+#   response = ""
+
+#   print("Question   : " + str(Question))
+#   print("Language   : " + str(Language))
+#   print("Session ID : " + str(SessionId))
+#   print("\n")
+
+#   for r in chain_with_history.stream(
+#       {
+#         "messages": [HumanMessage(content=Question)],
+#         "language": Language,
+#         "question": Question
+#       },
+#       config={"configurable": {"session_id": SessionId}},
+#     ):
+
+#     response = response + r
   
-  print("Response: " + str(response))
+#     print("Response: " + str(response))
   
-  return {"response": response}
+#     yield {"response": response}
 
+# @app.post("/api/v1/query")
+# async def get_response(request: QueryRequest):
+#   print("\n======================================\n")
 
+#   # Extract the query from the request body
+#   Question = request.question
+#   Language = request.language
+#   SessionId = request.sessionid
+
+#   print("Question   : " + str(Question))
+#   print("Language   : " + str(Language))
+#   print("Session ID : " + str(SessionId))
+#   print("\n")
+
+#   response = chain_with_history.invoke(
+#       {
+#         "messages": [HumanMessage(content=Question)],
+#         "language": Language,
+#         "question": Question
+#       },
+#       config={"configurable": {"session_id": SessionId}},
+#     )
+  
+#   print("Response: " + str(response))
+  
+#   return {"response": response}
 
 if __name__ == "__main__":
   import multiprocessing
