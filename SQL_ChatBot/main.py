@@ -4,6 +4,7 @@ import datetime
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from async_generator import async_generator , yield_
+from typing import AsyncGenerator
 import asyncio
 from langchain.callbacks.streaming_aiter import AsyncIteratorCallbackHandler
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -99,7 +100,6 @@ class QueryRequest(BaseModel):
 
 app = FastAPI()
 
-# Modify the get_response function to support streaming
 @app.post("/api/v1/query")
 async def get_response(request: QueryRequest):
     print("\n======================================\n")
@@ -114,23 +114,55 @@ async def get_response(request: QueryRequest):
     print("Session ID : " + str(SessionId))
     print("\n")
 
-    # Function to generate response stream
-    @async_generator
-    async def response_generator():
-        for r in chain_with_history.stream(
-        {
-          "messages": [HumanMessage(content=Question)],
-          "language": Language,
-          "question": Question
-        },
-        config={"configurable": {"session_id": SessionId}},
+    # Define a generator function that yields the streaming response
+    async def stream_response() -> AsyncGenerator[str, None]:
+        async for token in chain_with_history.astream(
+            {
+                "messages": [HumanMessage(content=Question)],
+                "language": Language,
+                "question": Question
+            },
+            config={"configurable": {"session_id": SessionId}},
         ):
-            
-            await yield_(r)
-            await asyncio.sleep(0.1)
-            print(r)  # Simulate processing time or slow down for streaming
+            yield token 
+            await asyncio.sleep(0)
+            print(token)
 
-    return StreamingResponse(response_generator(), media_type="text/event-stream") #text/event-stream
+    # Return the streaming response
+    return StreamingResponse(stream_response(), media_type="text/plain")
+
+# Modify the get_response function to support streaming
+# @app.post("/api/v1/query")
+# async def get_response(request: QueryRequest):
+#     print("\n======================================\n")
+
+#     # Extract the query from the request body
+#     Question = request.question
+#     Language = request.language
+#     SessionId = request.sessionid
+
+#     print("Question   : " + str(Question))
+#     print("Language   : " + str(Language))
+#     print("Session ID : " + str(SessionId))
+#     print("\n")
+
+#     # Function to generate response stream
+#     @async_generator
+#     async def response_generator():
+#         for r in chain_with_history.stream(
+#         {
+#           "messages": [HumanMessage(content=Question)],
+#           "language": Language,
+#           "question": Question
+#         },
+#         config={"configurable": {"session_id": SessionId}},
+#         ):
+            
+#             await yield_(r)
+#             await asyncio.sleep(0.1)
+#             print(r)  # Simulate processing time or slow down for streaming
+
+#     return StreamingResponse(response_generator(), media_type="text/event-stream") #text/event-stream
 
 
 
@@ -164,6 +196,8 @@ async def get_response(request: QueryRequest):
 #     print("Response: " + str(response))
   
 #     yield {"response": response}
+
+
 
 # @app.post("/api/v1/query")
 # async def get_response(request: QueryRequest):
