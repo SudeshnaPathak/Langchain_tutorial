@@ -1,0 +1,5 @@
+Table,Description
+ground_water_level-2015-2022,"Contains data on groundwater levels from 2015 to 2022, including measurements for pre-monsoon and post-monsoon periods, well details, and location information such as state, district, block, village, and site."
+villagecontamination,"Records data on various contaminants in water sources at the village level, including pH, TDS, turbidity, and various chemical and bacteriological parameters."
+water_quality_data_ground_water,"Includes water quality data for groundwater monitoring locations, with parameters such as pH, conductivity, BOD, nitrate, and coliform levels. The data includes some unnamed columns that may require further investigation."
+water_quality_testing,"Provides an overview of water quality testing results, including the number of sources tested, sources found to be safe or contaminated, and the remedial measures taken."

@@ -54,7 +54,7 @@ VALUES
 
 CREATE TABLE VillageContamination (
     SNo INT PRIMARY KEY,
-    State VARCHAR(255),
+    State_Name VARCHAR(255),
     pH INT,
     TDS INT,
     Turbidity INT,
@@ -74,7 +74,7 @@ CREATE TABLE VillageContamination (
 );
 
 
-INSERT INTO VillageContamination (SNo, State, pH, TDS, Turbidity, Chloride, Total_Alkalinity, Total_Hardness, Sulphate, Iron, Total_Arsenic, Fluoride, Nitrate, Residual_Chlorine, Others_Chemical, E_coli, Total_Coliform, Others_Bacteriological)
+INSERT INTO VillageContamination (SNo, State_Name, pH, TDS, Turbidity, Chloride, Total_Alkalinity, Total_Hardness, Sulphate, Iron, Total_Arsenic, Fluoride, Nitrate, Residual_Chlorine, Others_Chemical, E_coli, Total_Coliform, Others_Bacteriological)
 VALUES
 (1, 'Andaman & Nicobar Islands', 3, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0),
 (2, 'Andhra Pradesh', 5, 166, 12, 54, 62, 162, 5, 18, 0, 85, 29, 1, 12, 3, 14, 0),

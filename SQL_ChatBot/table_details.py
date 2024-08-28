@@ -19,7 +19,7 @@ LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
 llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 def get_table_details():
     # Read the CSV file into a DataFrame
-    table_description = pd.read_csv("classicmodels_table_descriptions.csv")
+    table_description = pd.read_csv("jalshaktimodels_table_description.csv")
     table_docs = []
 
     # Iterate over the DataFrame rows to create Document objects
