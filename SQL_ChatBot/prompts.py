@@ -34,7 +34,7 @@ final_prompt = ChatPromptTemplate.from_messages(
 
 
 answer_prompt = PromptTemplate.from_template(
-     """Given the following user question, corresponding 'SQL Query', and 'SQL Result', answer the user question to the best of your ability in proper {language}. In case of 'SQL Result' with multiple rows convert it into a tabular format for displaying it to the user and for small answers, answer in a continuous line.
+     """Given the following user question, corresponding 'SQL Query', and 'SQL Result', answer the user question to the best of your ability in proper {language}. In case of 'SQL Result' with multiple rows convert it into a tabular format for displaying it to the user and for small answers, answer in a continuous line. For very large responses, if the number of tokens exceeds 15000, stop and continue generating only after user enters 'continue' then continue from the same point. 
 
  Question: {question}
  SQL Query: {query}

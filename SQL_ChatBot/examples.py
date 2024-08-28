@@ -50,48 +50,48 @@ LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
 # ]
 
 
-examples = [
-    {
-        "input": "Give me the groundwater depth and aquifer details for all wells in a specific village.",
-        "query": "SELECT Village, Well_ID, Well_Depth, Aquifer FROM ground_water_level-2015-2022 WHERE Village = 'Village_X' ORDER BY Well_ID;"
-    },
-    {
-        "input": "Provide the pre-monsoon and post-monsoon groundwater levels for all years in a specific village.",
-        "query": "SELECT Village, Well_ID, Pre-monsoon_2015, Post-monsoon_2015, Pre-monsoon_2016, Post-monsoon_2016, Pre-monsoon_2017, Post-monsoon_2017, Pre-monsoon_2018, Post-monsoon_2018, Pre-monsoon_2019, Post-monsoon_2019, Pre-monsoon_2020, Post-monsoon_2020, Pre-monsoon_2021, Post-monsoon_2021, Pre-monsoon_2022, Post-monsoon_2022 FROM ground_water_level-2015-2022 WHERE Village = 'Village_X' ORDER BY Well_ID;"
-    },
-    {
-        "input": "Retrieve the water contamination levels for a specific state.",
-        "query": "SELECT State_Name, pH, TDS, Turbidity, Chloride, Total_Alkalinity, Total_Hardness, Sulphate, Iron, Total_Arsenic, Fluoride, Nitrate, Residual_Chlorine, E_coli, Total_Coliform FROM villagecontamination WHERE State_Name = 'State_X' ORDER BY SNo;"
-    },
-    {
-        "input": "Give me the list of all contaminated sources in a specific state.",
-        "query": "SELECT State_Name, S_No, Sources_Found_Contaminated FROM water_quality_testing WHERE State_Name = 'State_X' AND Sources_Found_Contaminated > 0 ORDER BY S_No;"
-    },
-    {
-        "input": "List the wells with the deepest groundwater levels in a specific state.",
-        "query": "SELECT Well_ID, State_Name, Well_Depth FROM ground_water_level-2015-2022 WHERE State_Name = 'State_X' ORDER BY Well_Depth DESC;"
-    },
-    {
-        "input": "Compare water quality parameters for all monitoring locations in a specific state.",
-        "query": "SELECT Name of Monitoring Location, pH, Conductivity (μmhos/cm), BOD, Nitrate_N, Fluoride, Arsenic FROM water_quality_data_ground_water WHERE State_Name = 'State_X' ORDER BY Name of Monitoring Location;"
-    },
-    {
-        "input": "Identify villages with the highest levels of a specific contaminant in a state.",
-        "query": "SELECT Village, State_Name, Fluoride, Arsenic FROM villagecontamination WHERE State_Name = 'State_X' AND (Fluoride > 1.5 OR Arsenic > 0.01) ORDER BY Village;"
-    },
-    {
-        "input": "Provide details of remedial measures taken in contaminated areas of a specific state.",
-        "query": "SELECT State_Name, S_No, Remedial_Measures_Taken FROM water_quality_testing WHERE State_Name = 'State_X' AND Remedial_Measures_Taken > 0 ORDER BY S_No;"
-    },
-    {
-        "input": "Retrieve the water quality testing status for a specific state.",
-        "query": "SELECT State_Name, Total_Sources, Sources_Tested, Sources_Yet_To_Be_Tested, Sources_Found_Safe, Sources_Found_Contaminated FROM water_quality_testing WHERE State_Name = 'State_X';"
-    },
-    {
-        "input": "Find monitoring locations with the highest BOD levels in a specific state.",
-        "query": "SELECT Name of Monitoring Location, BOD FROM water_quality_data_ground_water WHERE State_Name = 'State_X' ORDER BY BOD DESC;"
-    }
-]
+examples= [
+        {
+            "input": "Give me the groundwater depth and aquifer details for all wells in a specific village.",
+            "query": "SELECT Village, Well_ID, Well_Depth (meters), Aquifer FROM ground_water_level-2015-2022 WHERE Village = 'Village_X' ORDER BY Well_ID;"
+        },
+        {
+            "input": "Provide the pre-monsoon and post-monsoon groundwater levels for all years in a specific village.",
+            "query": "SELECT Village, Well_ID, Pre-monsoon_2015 (meters below ground level), Post-monsoon_2015 (meters below ground level), Pre-monsoon_2016 (meters below ground level), Post-monsoon_2016 (meters below ground level), Pre-monsoon_2017 (meters below ground level), Post-monsoon_2017 (meters below ground level), Pre-monsoon_2018 (meters below ground level), Post-monsoon_2018 (meters below ground level), Pre-monsoon_2019 (meters below ground level), Post-monsoon_2019 (meters below ground level), Pre-monsoon_2020 (meters below ground level), Post-monsoon_2020 (meters below ground level), Pre-monsoon_2021 (meters below ground level), Post-monsoon_2021 (meters below ground level), Pre-monsoon_2022 (meters below ground level), Post-monsoon_2022 (meters below ground level) FROM ground_water_level-2015-2022 WHERE Village = 'Village_X' ORDER BY Well_ID;"
+        },
+        {
+            "input": "Retrieve the water contamination levels for a specific state.",
+            "query": "SELECT State_Name, pH, TDS, Turbidity, Chloride, Total_Alkalinity, Total_Hardness, Sulphate, Iron, Total_Arsenic, Fluoride, Nitrate, Residual_Chlorine, E_coli, Total_Coliform FROM villagecontamination WHERE State_Name = 'State_X' ORDER BY SNo;"
+        },
+        {
+            "input": "Give me the list of all contaminated sources in a specific state.",
+            "query": "SELECT State_Name, S_No, Sources_Found_Contaminated FROM water_quality_testing WHERE State_Name = 'State_X' AND Sources_Found_Contaminated > 0 ORDER BY S_No;"
+        },
+        {
+            "input": "List the wells with the deepest groundwater levels in a specific state.",
+            "query": "SELECT Well_ID, State_Name, Well_Depth (meters) FROM ground_water_level-2015-2022 WHERE State_Name = 'State_X' ORDER BY Well_Depth (meters) DESC;"
+        },
+        {
+            "input": "Compare water quality parameters for all monitoring locations in a specific state.",
+            "query": "SELECT Name of Monitoring Location, pH, Conductivity (μmhos/cm), BOD (mg/L), Nitrate N (mg/L), Fluoride (mg/L), Arsenic (mg/L) FROM water_quality_data_ground_water WHERE State_Name = 'State_X' ORDER BY Name of Monitoring Location;"
+        },
+        {
+            "input": "Identify villages with the highest levels of a specific contaminant in a state.",
+            "query": "SELECT Village, State_Name, Fluoride, Total_Arsenic FROM villagecontamination WHERE State_Name = 'State_X' AND (Fluoride > 1.5 OR Total_Arsenic > 0.01) ORDER BY Village;"
+        },
+        {
+            "input": "Provide details of remedial measures taken in contaminated areas of a specific state.",
+            "query": "SELECT State_Name, S_No, Remedial_Measures_Taken FROM water_quality_testing WHERE State_Name = 'State_X' AND Remedial_Measures_Taken > 0 ORDER BY S_No;"
+        },
+        {
+            "input": "Retrieve the water quality testing status for a specific state.",
+            "query": "SELECT State_Name, Total_Sources, Sources_Tested, Sources_Yet_To_Be_Tested, Sources_Found_Safe, Sources_Found_Contaminated FROM water_quality_testing WHERE State_Name = 'State_X';"
+        },
+        {
+            "input": "Find monitoring locations with the highest BOD levels in a specific state.",
+            "query": "SELECT Name of Monitoring Location, BOD (mg/L) FROM water_quality_data_ground_water WHERE State_Name = 'State_X' ORDER BY BOD (mg/L) DESC;"
+        }
+    ]
 
 
 

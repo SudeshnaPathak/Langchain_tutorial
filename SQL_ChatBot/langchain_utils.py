@@ -36,18 +36,19 @@ def get_chain():
     chain = (
     RunnablePassthrough.assign(selected_tables=table_chain) |
     RunnablePassthrough.assign(query=generate_query).assign(
-        result=itemgetter("query") | execute_query
-        )
-    | rephrase_answer
+        result= itemgetter("query") | execute_query
+        ) 
+        | rephrase_answer
     )
 
     return chain
+# | rephrase_answer in place of | StrOutputParser()
 
 if __name__ == "__main__":
     chain = get_chain()
     while True:
         question = input("Enter a Question: ")
         start_time = datetime.datetime.now()
-        result = chain.invoke({"question": question})
-        print(result)
+        response = chain.invoke({"question": question , "messages" : []})
+        print(str(response['result']))
         print("Time Taken: " , datetime.datetime.now() - start_time) 

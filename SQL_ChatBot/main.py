@@ -113,7 +113,7 @@ async def get_response(request: QueryRequest):
     print("Language   : " + str(Language))
     print("Session ID : " + str(SessionId))
     print("\n")
-
+    
     # Define a generator function that yields the streaming response
     async def stream_response() -> AsyncGenerator[str, None]:
         async for token in chain_with_history.astream(
@@ -124,7 +124,7 @@ async def get_response(request: QueryRequest):
             },
             config={"configurable": {"session_id": SessionId}},
         ):
-            yield token 
+            yield token
             await asyncio.sleep(0)
             print(token)
 
@@ -223,7 +223,6 @@ async def get_response(request: QueryRequest):
 #     )
   
 #   print("Response: " + str(response))
-  
 #   return {"response": response}
 
 if __name__ == "__main__":
