@@ -11,15 +11,15 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.messages import HumanMessage, AIMessage, trim_messages
 from langchain_core.chat_history import BaseChatMessageHistory, InMemoryChatMessageHistory
-from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables import RunnablePassthrough , RunnableParallel
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain.schema import LLMResult
 from langchain_openai import ChatOpenAI
-from langserve import add_routes
 import os
 from operator import itemgetter
 from dotenv import load_dotenv
 from langchain_utils import get_chain
+from text_utils import text_chain
 from langchain_core.pydantic_v1 import BaseModel, Field
 
 load_dotenv()
@@ -59,77 +59,80 @@ trimmer = trim_messages(
 
 
 sql_chain = get_chain()
+text_chain = text_chain
 # -- Create chain --
 # chain = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer) | prompt | model | parser
-chain = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| sql_chain
+chain1 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| sql_chain
+chain2 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| text_chain
+map_chain = RunnableParallel(text=chain2, sql=chain1)
 
 # -- Create the chain with history --
 chain_with_history = RunnableWithMessageHistory(
-    chain,
+    map_chain,
     get_session_history,
     input_messages_key="messages",
 )
 
 
 
-# if __name__=="__main__":
-#     while True:
-#       Query = input("Query: ")
-#       Language = input("Langauge: ")
-#       SessionId = input("Session ID: ")
-#       start_time = datetime.datetime.now()
-#       print("\n")
+if __name__=="__main__":
+    while True:
+      Query = input("Query: ")
+      Language = input("Langauge: ")
+      SessionId = input("Session ID: ")
+      start_time = datetime.datetime.now()
+      print("\n")
 
-#       response = chain_with_history.invoke(
-#         {"messages": [HumanMessage(content=Query)], 
-#          "language": Language , 
-#          "question": Query},
-#         config={"configurable": {"session_id": SessionId}},
-#       )
+      response = chain_with_history.invoke(
+        {"messages": [HumanMessage(content=Query)], 
+         "language": Language , 
+         "question": Query},
+        config={"configurable": {"session_id": SessionId}},
+      )
+      print("Response: ")
+      print(response)
+      print("Time Taken: " , datetime.datetime.now() - start_time)
+      print("\n")
 
-#       print("Response: " + response)
-#       print("Time Taken: " , datetime.datetime.now() - start_time)
-#       print("\n")
 
 
+# class QueryRequest(BaseModel):
+#     question: str
+#     language: str
+#     sessionid: str
 
-class QueryRequest(BaseModel):
-    question: str
-    language: str
-    sessionid: str
+# app = FastAPI()
 
-app = FastAPI()
+# @app.post("/api/v1/query")
+# async def get_response(request: QueryRequest):
+#     print("\n======================================\n")
 
-@app.post("/api/v1/query")
-async def get_response(request: QueryRequest):
-    print("\n======================================\n")
+#     # Extract the query from the request body
+#     Question = request.question
+#     Language = request.language
+#     SessionId = request.sessionid
 
-    # Extract the query from the request body
-    Question = request.question
-    Language = request.language
-    SessionId = request.sessionid
-
-    print("Question   : " + str(Question))
-    print("Language   : " + str(Language))
-    print("Session ID : " + str(SessionId))
-    print("\n")
+#     print("Question   : " + str(Question))
+#     print("Language   : " + str(Language))
+#     print("Session ID : " + str(SessionId))
+#     print("\n")
     
-    # Define a generator function that yields the streaming response
-    async def stream_response() -> AsyncGenerator[str, None]:
-        async for token in chain_with_history.astream(
-            {
-                "messages": [HumanMessage(content=Question)],
-                "language": Language,
-                "question": Question
-            },
-            config={"configurable": {"session_id": SessionId}},
-        ):
-            yield token
-            await asyncio.sleep(0)
-            print(token)
+#     # Define a generator function that yields the streaming response
+#     async def stream_response() -> AsyncGenerator[str, None]:
+#         async for token in chain_with_history.astream(
+#             {
+#                 "messages": [HumanMessage(content=Question)],
+#                 "language": Language,
+#                 "question": Question
+#             },
+#             config={"configurable": {"session_id": SessionId}},
+#         ):
+#             yield token
+#             await asyncio.sleep(0)
+#             print(token)
 
-    # Return the streaming response
-    return StreamingResponse(stream_response(), media_type="text/plain")
+#     # Return the streaming response
+#     return StreamingResponse(stream_response(), media_type="text/plain")
 
 # Modify the get_response function to support streaming
 # @app.post("/api/v1/query")
@@ -225,21 +228,21 @@ async def get_response(request: QueryRequest):
 #   print("Response: " + str(response))
 #   return {"response": response}
 
-if __name__ == "__main__":
-  import multiprocessing
-  import subprocess
-  import uvicorn
+# if __name__ == "__main__":
+#   import multiprocessing
+#   import subprocess
+#   import uvicorn
 
-  # workers = multiprocessing.cpu_count() * 2 + 1
+#   # workers = multiprocessing.cpu_count() * 2 + 1
 
-  uvicorn_cmd = [
-      "uvicorn",
-      "main:app",
-      # "--host=localhost",
-      "--port=8080",
-      # f"--workers={workers}",
-      "--reload"
-  ]
+#   uvicorn_cmd = [
+#       "uvicorn",
+#       "main:app",
+#       # "--host=localhost",
+#       "--port=8080",
+#       # f"--workers={workers}",
+#       "--reload"
+#   ]
 
-  # uvicorn.run(app, host="0.0.0.0", port=8000, reload=True, workers=workers)
-  subprocess.run(uvicorn_cmd)
+#   # uvicorn.run(app, host="0.0.0.0", port=8000, reload=True, workers=workers)
+#   subprocess.run(uvicorn_cmd)
