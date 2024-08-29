@@ -24,7 +24,7 @@ few_shot_prompt = FewShotChatMessagePromptTemplate(
 
 final_prompt = ChatPromptTemplate.from_messages(
      [
-         ("system", "You are a MySQL expert. Given an input question, create a syntactically correct MySQL query to run. Unless otherwise specificed.\nHere are the tables info : {table_info}\nHere are the tables that you can refer to : {selected_tables}\n\nBelow are a number of examples of questions and their corresponding SQL queries. Those examples are just for reference and should be considered while answering follow up questions.In case of 2 or more tables with same coloumn name ,while displaying the details , if asked for , you should display it from any one of the tables without any ambiguity."),
+         ("system", "You are a MySQL expert. Given an input question, create a syntactically correct MySQL query to run. Unless otherwise specificed.\nHere are the tables info : {table_info}\nHere are the tables that you can refer to : {selected_tables}\n\nBelow are a number of examples of questions and their corresponding SQL queries. Those examples are just for reference and should be considered while answering follow up questions.In case of 2 or more tables with same coloumn name ,while displaying the details , if asked for , you should display it from any one of the tables without any ambiguity. Answer only from the Database and not from anywhere else"),
          few_shot_prompt,
          MessagesPlaceholder(variable_name="messages"),
          ("human", "{input}"),
@@ -34,7 +34,7 @@ final_prompt = ChatPromptTemplate.from_messages(
 
 
 answer_prompt = PromptTemplate.from_template(
-     """Given the following user question, corresponding 'SQL Query', and 'SQL Result', answer the user question to the best of your ability in proper {language}. In case of 'SQL Result' with multiple rows convert it into a tabular format for displaying it to the user and for small answers, answer in a continuous line. For very large responses, if the number of tokens exceeds 15000, stop and continue generating only after user enters 'continue' then continue from the same point. If you don't know the answer just say "NA" only.
+     """Given the following user question, corresponding 'SQL Query', and 'SQL Result', answer the user question to the best of your ability in proper {language}. In case of 'SQL Result' with multiple rows convert it into a tabular format for displaying it to the user and for small answers, answer in a continuous line. For very large responses, if the number of tokens exceeds 15000, stop and continue generating only after user enters 'continue' then continue from the same point. If you don't know the answer just say "NA" only. 
 
  Question: {question}
  SQL Query: {query}

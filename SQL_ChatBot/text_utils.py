@@ -18,7 +18,7 @@ embeddings = OpenAIEmbeddings()
     
 db = FAISS.load_local("jalshakti_faiss_index", embeddings,allow_dangerous_deserialization=True)
 prompt_template = """
-    Answer the question as detailed as possible from the provided context, make sure to provide all the details. If you don't know the answer just say "NA" only.\n\n.
+    Answer the question as detailed as possible from the provided context, make sure to provide all the details. If the answer is not related to context, just say "NA" only.\n\n.
     Answer the user question to the best of your ability in proper {language}.
     Context:\n {context}?\n
     Question: \n{question}\n
@@ -31,7 +31,7 @@ llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 prompt = ChatPromptTemplate.from_messages(
      [
          ("system", prompt_template),
-        #  MessagesPlaceholder(variable_name="messages"),
+         MessagesPlaceholder(variable_name="messages"),
      ]    
  )
 
@@ -42,6 +42,7 @@ text_chain = (
         "context": itemgetter("question") | retriever,
         "question": itemgetter("question"),
         "language": itemgetter("language"),
+        "messages":itemgetter("messages")
     }
     | prompt
     | llm
@@ -51,6 +52,10 @@ text_chain = (
 # while True:
 #     question = input("Query: ")
 #     language = input("Language: ")
-#     response = text_chain.invoke({"question" : question , "language" : language ,"messages": [HumanMessage(content=question)]})
+#     SessionId = input("SessionId: ")
+#     response = text_chain.invoke(
+#         {"question" : question , "language" : language ,"messages": [HumanMessage(content=question)]}
+#         ,config={"configurable": {"session_id": SessionId}}
+#         )
 #     print(response)
 

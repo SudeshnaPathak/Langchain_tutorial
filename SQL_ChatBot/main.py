@@ -39,13 +39,19 @@ os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 model = ChatOpenAI(model="gpt-3.5-turbo-0125")
 
 # -- Define the session history storage --
-store = {}
+store_sql = {}
+store_text = {}
 
 # -- Define the session history getter --
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-  if session_id not in store:
-    store[session_id] = InMemoryChatMessageHistory()
-  return store[session_id]
+def get_session_history_sql(session_id: str) -> BaseChatMessageHistory:
+  if session_id not in store_sql:
+    store_sql[session_id] = InMemoryChatMessageHistory()
+  return store_sql[session_id]
+
+def get_session_history_text(session_id: str) -> BaseChatMessageHistory:
+  if session_id not in store_text:
+    store_text[session_id] = InMemoryChatMessageHistory()
+  return store_text[session_id]
 
 # -- Define the chat history trimmer --
 trimmer = trim_messages(
@@ -63,76 +69,112 @@ text_chain = text_chain
 # -- Create chain --
 # chain = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer) | prompt | model | parser
 chain1 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| sql_chain
-chain2 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| text_chain
-map_chain = RunnableParallel(text=chain2, sql=chain1)
+chain2 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| text_chain 
+# map_chain = RunnableParallel(text=chain2, sql=chain1)
 
 # -- Create the chain with history --
-chain_with_history = RunnableWithMessageHistory(
-    map_chain,
-    get_session_history,
+chain_with_history_sql = RunnableWithMessageHistory(
+    chain1,
+    get_session_history_sql,
+    input_messages_key="messages",
+)
+
+chain_with_history_text = RunnableWithMessageHistory(
+    chain2,
+    get_session_history_text,
     input_messages_key="messages",
 )
 
 
+# if __name__=="__main__":
+#     while True:
+#       Query = input("Query: ")
+#       Language = input("Langauge: ")
+#       SessionId = input("Session ID: ")
+#       start_time = datetime.datetime.now()
+#       print("\n")
 
-if __name__=="__main__":
-    while True:
-      Query = input("Query: ")
-      Language = input("Langauge: ")
-      SessionId = input("Session ID: ")
-      start_time = datetime.datetime.now()
-      print("\n")
-
-      response = chain_with_history.invoke(
-        {"messages": [HumanMessage(content=Query)], 
-         "language": Language , 
-         "question": Query},
-        config={"configurable": {"session_id": SessionId}},
-      )
-      print("Response: ")
-      print(response)
-      print("Time Taken: " , datetime.datetime.now() - start_time)
-      print("\n")
-
+#       response = chain_with_history.invoke(
+#         {"messages": [HumanMessage(content=Query)], 
+#          "language": Language , 
+#          "question": Query},
+#         config={"configurable": {"session_id": SessionId}},
+#       )
+#       print("Response: ")
+#       print(response)
+#       print("Time Taken: " , datetime.datetime.now() - start_time)
+#       print("\n")
 
 
-# class QueryRequest(BaseModel):
-#     question: str
-#     language: str
-#     sessionid: str
 
-# app = FastAPI()
+class QueryRequest(BaseModel):
+    question: str
+    language: str
+    sessionid: str
 
-# @app.post("/api/v1/query")
-# async def get_response(request: QueryRequest):
-#     print("\n======================================\n")
+app = FastAPI()
 
-#     # Extract the query from the request body
-#     Question = request.question
-#     Language = request.language
-#     SessionId = request.sessionid
+@app.post("/api/v1/sql")
+async def get_response(request: QueryRequest):
+    print("\n======================================\n")
 
-#     print("Question   : " + str(Question))
-#     print("Language   : " + str(Language))
-#     print("Session ID : " + str(SessionId))
-#     print("\n")
+    # Extract the query from the request body
+    Question = request.question
+    Language = request.language
+    SessionId = request.sessionid
+
+    print("Question   : " + str(Question))
+    print("Language   : " + str(Language))
+    print("Session ID : " + str(SessionId))
+    print("\n")
     
-#     # Define a generator function that yields the streaming response
-#     async def stream_response() -> AsyncGenerator[str, None]:
-#         async for token in chain_with_history.astream(
-#             {
-#                 "messages": [HumanMessage(content=Question)],
-#                 "language": Language,
-#                 "question": Question
-#             },
-#             config={"configurable": {"session_id": SessionId}},
-#         ):
-#             yield token
-#             await asyncio.sleep(0)
-#             print(token)
+    # Define a generator function that yields the streaming response
+    async def stream_response() -> AsyncGenerator[str, None]:
+        async for token in chain_with_history_sql.astream(
+            {
+                "messages": [HumanMessage(content=Question)],
+                "language": Language,
+                "question": Question
+            },
+            config={"configurable": {"session_id": SessionId}},
+        ):
+            yield token
+            await asyncio.sleep(0)
+            print(token)
 
-#     # Return the streaming response
-#     return StreamingResponse(stream_response(), media_type="text/plain")
+    # Return the streaming response
+    return StreamingResponse(stream_response(), media_type="text/plain")
+
+@app.post("/api/v1/text")
+async def get_response(request: QueryRequest):
+    print("\n======================================\n")
+
+    # Extract the query from the request body
+    Question = request.question
+    Language = request.language
+    SessionId = request.sessionid
+
+    print("Question   : " + str(Question))
+    print("Language   : " + str(Language))
+    print("Session ID : " + str(SessionId))
+    print("\n")
+    
+    # Define a generator function that yields the streaming response
+    async def stream_response() -> AsyncGenerator[str, None]:
+        async for token in chain_with_history_text.astream(
+            {
+                "messages": [HumanMessage(content=Question)],
+                "language": Language,
+                "question": Question
+            },
+            config={"configurable": {"session_id": SessionId}},
+        ):
+            yield token
+            await asyncio.sleep(0)
+            print(token)
+
+    # Return the streaming response
+    return StreamingResponse(stream_response(), media_type="text/plain")
 
 # Modify the get_response function to support streaming
 # @app.post("/api/v1/query")
@@ -226,23 +268,24 @@ if __name__=="__main__":
 #     )
   
 #   print("Response: " + str(response))
-#   return {"response": response}
+#   return response
+#   return {"response": f"{response['text']} \n {response['sql']}"}
 
-# if __name__ == "__main__":
-#   import multiprocessing
-#   import subprocess
-#   import uvicorn
+if __name__ == "__main__":
+  import multiprocessing
+  import subprocess
+  import uvicorn
 
-#   # workers = multiprocessing.cpu_count() * 2 + 1
+  # workers = multiprocessing.cpu_count() * 2 + 1
 
-#   uvicorn_cmd = [
-#       "uvicorn",
-#       "main:app",
-#       # "--host=localhost",
-#       "--port=8080",
-#       # f"--workers={workers}",
-#       "--reload"
-#   ]
+  uvicorn_cmd = [
+      "uvicorn",
+      "main:app",
+      # "--host=localhost",
+      "--port=8080",
+      # f"--workers={workers}",
+      "--reload"
+  ]
 
-#   # uvicorn.run(app, host="0.0.0.0", port=8000, reload=True, workers=workers)
-#   subprocess.run(uvicorn_cmd)
+  # uvicorn.run(app, host="0.0.0.0", port=8000, reload=True, workers=workers)
+  subprocess.run(uvicorn_cmd)
