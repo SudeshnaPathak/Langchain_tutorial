@@ -73,7 +73,7 @@ examples= [
         },
         {
             "input": "Compare water quality parameters for all monitoring locations in a specific state.",
-            "query": "SELECT Name of Monitoring Location, pH, Conductivity (μmhos/cm), BOD (mg/L), Nitrate N (mg/L), Fluoride (mg/L), Arsenic (mg/L) FROM water_quality_data_ground_water WHERE State_Name = 'State_X' ORDER BY Name of Monitoring Location;"
+            "query": "SELECT Name of Monitoring Location, pH_Max , pH_Min, Conductivity_Max(μmhos/cm),Conductivity_Min(μmhos/cm) ,BOD_Max(mg/L),BOD_Min(mg/L), Nitrate N_Max(mg/L), Nitrate N_Min(mg/L) ,Fluoride_Max(mg/L), Fluoride_Min(mg/L) ,Arsenic_Max(mg/L),Arsenic_Min(mg/L) FROM water_quality_data_ground_water WHERE State_Name = 'State_X' ORDER BY Name of Monitoring Location;"
         },
         {
             "input": "Identify villages with the highest levels of a specific contaminant in a state.",
@@ -89,7 +89,7 @@ examples= [
         },
         {
             "input": "Find monitoring locations with the highest BOD levels in a specific state.",
-            "query": "SELECT Name of Monitoring Location, BOD (mg/L) FROM water_quality_data_ground_water WHERE State_Name = 'State_X' ORDER BY BOD (mg/L) DESC;"
+            "query": "SELECT Name of Monitoring Location, BOD_Max (mg/L) FROM water_quality_data_ground_water WHERE State_Name = 'State_X' ORDER BY BOD (mg/L) DESC;"
         }
     ]
 

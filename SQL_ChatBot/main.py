@@ -244,7 +244,7 @@ async def get_response(request: QueryRequest):
 
 
 
-# @app.post("/api/v1/query")
+# @app.post("/api/v1/sql")
 # async def get_response(request: QueryRequest):
 #   print("\n======================================\n")
 
@@ -258,7 +258,7 @@ async def get_response(request: QueryRequest):
 #   print("Session ID : " + str(SessionId))
 #   print("\n")
 
-#   response = chain_with_history.invoke(
+#   response = chain_with_history_sql.invoke(
 #       {
 #         "messages": [HumanMessage(content=Question)],
 #         "language": Language,
@@ -269,7 +269,33 @@ async def get_response(request: QueryRequest):
   
 #   print("Response: " + str(response))
 #   return response
-#   return {"response": f"{response['text']} \n {response['sql']}"}
+# #   return {"response": f"{response['text']} \n {response['sql']}"}
+
+# @app.post("/api/v1/text")
+# async def get_response(request: QueryRequest):
+#   print("\n======================================\n")
+
+#   # Extract the query from the request body
+#   Question = request.question
+#   Language = request.language
+#   SessionId = request.sessionid
+
+#   print("Question   : " + str(Question))
+#   print("Language   : " + str(Language))
+#   print("Session ID : " + str(SessionId))
+#   print("\n")
+
+#   response = chain_with_history_text.invoke(
+#       {
+#         "messages": [HumanMessage(content=Question)],
+#         "language": Language,
+#         "question": Question
+#       },
+#       config={"configurable": {"session_id": SessionId}},
+#     )
+  
+#   print("Response: " + str(response))
+#   return response
 
 if __name__ == "__main__":
   import multiprocessing
