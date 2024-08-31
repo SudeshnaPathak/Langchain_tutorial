@@ -20,6 +20,7 @@ db = FAISS.load_local("jalshakti_faiss_index", embeddings,allow_dangerous_deseri
 prompt_template = """
     Answer the question as detailed as possible from the provided context, make sure to provide all the details. If the answer is not related to context, just say "NA" only.\n\n.
     Answer the user question to the best of your ability in proper {language}.
+    Answer only from the provided context and not from anywhere else.
     Context:\n {context}?\n
     Question: \n{question}\n
     
