@@ -1,0 +1,11 @@
+
+======================================
+
+Question   : Give me the ground water quality details Assam for all monitoring Locations 
+Language   : English
+Session ID : 123
+
+
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"

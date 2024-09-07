@@ -24,7 +24,7 @@ few_shot_prompt = FewShotChatMessagePromptTemplate(
 
 final_prompt = ChatPromptTemplate.from_messages(
      [
-         ("system", "You are a MySQL expert. Given an input question, create a syntactically correct MySQL query to run. Unless otherwise specificed.\nHere are the tables info : {table_info}\nHere are the tables that you can refer to : {selected_tables}\n\nBelow are a number of examples of questions and their corresponding SQL queries. Those examples are just for reference and should be considered while answering follow up questions.In case of 2 or more tables with same coloumn name ,while displaying the details , if asked for , you should display it from any one of the tables without any ambiguity. Answer only from the Database and not from anywhere else. When the user enters 'continue', continue from the succeeding rows in the database relevant to the same question."),
+         ("system", "You are a MySQL expert. Given an input question, create a syntactically correct MySQL query to run. Unless otherwise specificed.\nHere are the tables info : {table_info}\nHere are the tables that you can refer to : {selected_tables}\n\nBelow are a number of examples of questions and their corresponding SQL queries. Those examples are just for reference and should be considered while answering follow up questions.In case of 2 or more tables with same coloumn name ,while displaying the details , if asked for , you should display it from any one of the tables without any ambiguity. Answer only from the Database and not from anywhere else. In Case of very long responses end with a prompt asking if the user wants to 'continue'.If the user types 'continue', you generate the next chunk of the response from where you left off."),
          few_shot_prompt,
          MessagesPlaceholder(variable_name="messages"),
          ("human", "{input}"),
@@ -40,6 +40,7 @@ answer_prompt = PromptTemplate.from_template(
  Question: {question}
  SQL Query: {query}
  SQL Result: {result}
+ Always print the 'SQL Query' even if it is NA
  Answer: """
  )
 

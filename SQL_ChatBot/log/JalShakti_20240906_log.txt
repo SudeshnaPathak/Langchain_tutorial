@@ -1,0 +1,42 @@
+
+======================================
+
+Question   : Give me the ground water quality details Assam for all monitoring Locations 
+Language   : English
+Session ID : 547
+
+
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+Error in RootListenersTracer.on_chain_end callback: KeyError('output')
+Response: {'messages': [HumanMessage(content='Give me the ground water quality details Assam for all monitoring Locations ')], 'language': 'English', 'question': 'Give me the ground water quality details Assam for all monitoring Locations ', 'selected_tables': {'tables': ['ground_water_level-2015-2022', 'village_water_contamination', 'ground_water_quality_data', 'ground_water_quality_testing']}, 'query': "SELECT * FROM ground_water_quality_data WHERE State_Name = 'Assam';"}
+
+======================================
+
+Question   : Give me the entire Ground Water Resource Assessment of Assam
+Language   : English
+Session ID : 548
+
+
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+Error in RootListenersTracer.on_chain_end callback: KeyError('output')
+Response: {'messages': [HumanMessage(content='Give me the entire Ground Water Resource Assessment of Assam')], 'language': 'English', 'question': 'Give me the entire Ground Water Resource Assessment of Assam', 'selected_tables': {'tables': ['ground_water_level-2015-2022', 'village_water_contamination', 'ground_water_quality_data', 'ground_water_quality_testing']}, 'query': "SELECT * FROM ground_water_level-2015-2022 WHERE State_Name = 'Assam';"}
+
+======================================
+
+Question   : Give me the entire Ground Water testing and Ground water quality details of Assam
+Language   : English
+Session ID : 549
+
+
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+Error in RootListenersTracer.on_chain_end callback: KeyError('output')
+Response: {'messages': [HumanMessage(content='Give me the entire Ground Water testing and Ground water quality details of Assam')], 'language': 'English', 'question': 'Give me the entire Ground Water testing and Ground water quality details of Assam', 'selected_tables': {'tables': ['ground_water_level-2015-2022', 'village_water_contamination', 'ground_water_quality_data', 'ground_water_quality_testing']}, 'query': "SELECT * FROM ground_water_quality_testing WHERE State_Name = 'Assam';\n\nSELECT * FROM ground_water_quality_data WHERE State_Name = 'Assam';"}
+      0           1              2               3                         4                   5                           6                        7
+0  S_No  State_Name  Total_Sources  Sources_Tested  Sources_Yet_To_Be_Tested  Sources_Found_Safe  Sources_Found_Contaminated  Remedial_Measures_Taken
+1  4     Assam       101933         89187           12746                     87379               1808                        981                    

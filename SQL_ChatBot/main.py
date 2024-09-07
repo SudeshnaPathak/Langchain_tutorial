@@ -1,6 +1,7 @@
 # -- import necessary libraries --
 from typing import List, Any
 import datetime
+import pandas as pd
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from async_generator import async_generator , yield_
@@ -21,8 +22,14 @@ from dotenv import load_dotenv
 from langchain_utils import get_chain
 from text_utils import text_chain
 from langchain_core.pydantic_v1 import BaseModel, Field
+from Modular_function import newloggingfunction
+from sql_connection import sql_cursor , format_results_as_list
+
+
 
 load_dotenv()
+
+print = newloggingfunction("JalShakti", str(datetime.datetime.now().strftime("%Y%m%d")))
 
 # +++++++++++++++++ Constant values from env ++++++++++++++++++++++++
 
@@ -30,8 +37,6 @@ load_dotenv()
 os.environ["LANGCHAIN_TRACING_V2"] = os.getenv("LANGCHAIN_TRACING_V2")
 os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 
-# -- OpenAI API --
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
 # +++++++++++++++++ Model Structure Creation +++++++++++++++++++++++
 
@@ -66,9 +71,10 @@ trimmer = trim_messages(
 
 sql_chain = get_chain()
 text_chain = text_chain
+
 # -- Create chain --
 # chain = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer) | prompt | model | parser
-chain1 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| sql_chain
+chain1 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| sql_chain 
 chain2 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| text_chain 
 # map_chain = RunnableParallel(text=chain2, sql=chain1)
 
@@ -114,7 +120,7 @@ class QueryRequest(BaseModel):
 
 app = FastAPI()
 
-@app.post("/api/v1/sql_stream")
+# @app.post("/api/v1/sql_stream")
 async def get_response(request: QueryRequest):
     print("\n======================================\n")
 
@@ -145,7 +151,7 @@ async def get_response(request: QueryRequest):
     # Return the streaming response
     return StreamingResponse(stream_response(), media_type="text/plain")
 
-@app.post("/api/v1/text_stream")
+# @app.post("/api/v1/text_stream")
 async def get_response(request: QueryRequest):
     print("\n======================================\n")
 
@@ -295,7 +301,25 @@ async def get_response(request: QueryRequest):
     )
   
   print("Response: " + str(response))
-  return {"response" : response}
+  response_query_list = response['query'].split("\n\n")
+  cursor = sql_cursor()
+  table_list = []
+  
+  for i , query in enumerate(response_query_list):
+        query = query.replace(';' , '')
+        cursor.execute(query)
+        myresponse = list(cursor.fetchall())
+        headers = [i[0] for i in cursor.description]
+        print(headers)
+        table = format_results_as_list(headers , myresponse)
+        df = pd.DataFrame(table)
+        df = df.apply(lambda x: x.str.replace('\n', '', regex=False) if x.dtype == "object" else x)
+        print(df.to_csv(f"output/output{i}.csv",index = False , header = False , sep = '|'))
+        table_list.append(df.to_csv(index = False , header = False , sep = '|'))    
+  
+  
+  return {"response" : table_list}
+  
 
 @app.post("/api/v1/text")
 async def get_response(request: QueryRequest):

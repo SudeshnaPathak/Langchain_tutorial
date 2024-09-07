@@ -31,17 +31,22 @@ llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 def get_chain():
     print("Creating chain")
     generate_query = create_sql_query_chain(llm, db,final_prompt) 
-    execute_query = QuerySQLDataBaseTool(db=db)
+    execute_query = QuerySQLDataBaseTool(db=db , verbose = True)
     rephrase_answer = answer_prompt | llm | StrOutputParser()
+    # chain = (
+    # RunnablePassthrough.assign(selected_tables=table_chain) |
+    # RunnablePassthrough.assign(query=generate_query).assign(
+    #     result= itemgetter("query") | execute_query
+    #     ) 
+    #     | rephrase_answer
+    # )
+
     chain = (
     RunnablePassthrough.assign(selected_tables=table_chain) |
-    RunnablePassthrough.assign(query=generate_query).assign(
-        result= itemgetter("query") | execute_query
-        ) 
-        | rephrase_answer
+    RunnablePassthrough.assign(query=generate_query)
     )
 
-    return chain
+    return chain 
 # | rephrase_answer in place of | StrOutputParser()
 
 if __name__ == "__main__":
