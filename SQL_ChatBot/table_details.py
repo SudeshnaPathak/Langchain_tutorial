@@ -3,6 +3,7 @@ from langchain_core.output_parsers.openai_tools import PydanticToolsParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain.chains.openai_tools import create_extraction_chain_pydantic
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 from operator import itemgetter
 from typing import List
@@ -48,6 +49,7 @@ final_table_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system),
         ("human", "{input}"),
+         MessagesPlaceholder(variable_name="messages")
     ]
 )
 
