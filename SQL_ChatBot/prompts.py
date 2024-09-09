@@ -24,13 +24,26 @@ few_shot_prompt = FewShotChatMessagePromptTemplate(
 
 final_prompt = ChatPromptTemplate.from_messages(
      [
-         ("system", "You are a MySQL expert. Given an input question, create a syntactically correct MySQL query to run. Unless otherwise specificed.\nHere are the tables info : {table_info}\nHere are the tables that you can refer to : {selected_tables}\n\nBelow are a number of examples of questions and their corresponding SQL queries. Those examples are just for reference and should be considered while answering follow up questions.In case of 2 or more tables with same coloumn name ,while displaying the details , if asked for , you should display it from any one of the tables without any ambiguity. Answer only from the Database and not from anywhere else. In Case of very long responses end with a prompt asking if the user wants to 'continue'.If the user types 'continue', you generate the next chunk of the response from where you left off."),
+         ("system", "You are a MySQL expert. Given an input question, create a syntactically correct MySQL query to run. Unless otherwise specificed.\nHere are the tables info : {table_info}\nHere are the tables that you can refer to : {selected_tables}\n\nBelow are a number of examples of questions and their corresponding SQL queries. Those examples are just for reference and should be considered while answering follow up questions.In case of 2 or more tables with same coloumn name ,while displaying the details , if asked for , you should display it from any one of the tables without any ambiguity. Answer only from the Database and not from anywhere else."),
          few_shot_prompt,
          MessagesPlaceholder(variable_name="messages"),
          ("human", "{input}"),
      ]
       
  )
+
+question_prompt = ChatPromptTemplate.from_template(""" You are an expert assistant in reframing questions. If the user's question specifically asks for a report, reframe the question to include the following details: the detailed NOC Guidelines, definitions of some technical terms related to groundwater, and generalized Training Opportunities related to Groundwater.
+
+If the user asks for anything other than a report, return the user's original question without modification. Do not rephrase or generate a new question in this case.
+
+Question: {question}""")
+
+# question_prompt = ChatPromptTemplate.from_template(""" You are an assisstant expert in reframing Questions. If the user asks to generate a report in his question,
+#                                             then modify the question to provide the NOC Guidelines, definition of some technical terms related to groundwater, generalised Training Opportunities related to Groundwater.
+#                                             Include the use in the question if mentioned in the user's question, otherwise omit the section and add the extra portion in the question, other than the report if it is provided in the user's question.
+#                                             If the user is not asking to generate a Report then return the given question. Do not generate a new question or concatetenate anything to the question in this case.                               
+    
+# Question: {question}""")
 
 
 answer_prompt = PromptTemplate.from_template(

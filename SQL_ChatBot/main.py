@@ -24,12 +24,13 @@ from text_utils import text_chain
 from langchain_core.pydantic_v1 import BaseModel, Field
 from Modular_function import newloggingfunction
 from sql_connection import sql_cursor , format_results_as_list
+from prompts import question_prompt
 
 
 
 load_dotenv()
 
-print = newloggingfunction("JalShakti", str(datetime.datetime.now().strftime("%Y%m%d")))
+# print = newloggingfunction("JalShakti", str(datetime.datetime.now().strftime("%Y%m%d")))
 
 # +++++++++++++++++ Constant values from env ++++++++++++++++++++++++
 
@@ -74,8 +75,9 @@ text_chain = text_chain
 
 # -- Create chain --
 # chain = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer) | prompt | model | parser
+modify_question_chain = itemgetter("question") | question_prompt | model | StrOutputParser()
 chain1 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| sql_chain 
-chain2 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| text_chain 
+chain2 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )|text_chain 
 # map_chain = RunnableParallel(text=chain2, sql=chain1)
 
 # -- Create the chain with history --
@@ -334,6 +336,20 @@ async def get_response(request: QueryRequest):
   print("Language   : " + str(Language))
   print("Session ID : " + str(SessionId))
   print("\n")
+
+  if 'report' in Question or 'Report' in Question :
+     Question = f"{Question} (the detailed NOC Guidelines, definitions of some technical terms related to groundwater, and generalized Training Opportunities related to Groundwater.)"
+
+     print(Question)
+  else:
+      Question = Question
+
+  # question_response = modify_question_chain.invoke(
+  #    {
+  #       "question": Question
+  #    }
+  # )
+  # print("Question Response: " + str(question_response))
 
   response = chain_with_history_text.invoke(
       {
