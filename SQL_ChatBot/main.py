@@ -23,7 +23,7 @@ from langchain_utils import get_chain
 from text_utils import text_chain
 from langchain_core.pydantic_v1 import BaseModel, Field
 from Modular_function import newloggingfunction
-from sql_connection import sql_cursor , format_results_as_list
+from sql_connection import sql_cursor , format_results_as_list , format_results_as_markdown
 from prompts import question_prompt
 
 
@@ -306,21 +306,25 @@ async def get_response(request: QueryRequest):
   response_query_list = response['query'].split("\n\n")
   cursor = sql_cursor()
   table_list = []
+  try:
+     
+    for i , query in enumerate(response_query_list):
+          query = query.replace(';' , '')
+          cursor.execute(query)
+          myresponse = list(cursor.fetchall())
+          headers = [i[0] for i in cursor.description]
+          print(headers)
+          table = format_results_as_markdown(headers , myresponse)
+          # df = pd.DataFrame(table)
+          # df = df.apply(lambda x: x.str.replace('\n', '', regex=False) if x.dtype == "object" else x)
+          # print(df.to_csv(f"output/output{i}.csv",index = False , header = False , sep = '|'))
+          # table_list.append(df.to_csv(index = False , header = False , sep = '|')) 
+          print(table)   
+  except:
+     return{"response" : "NA"}
+     
   
-  for i , query in enumerate(response_query_list):
-        query = query.replace(';' , '')
-        cursor.execute(query)
-        myresponse = list(cursor.fetchall())
-        headers = [i[0] for i in cursor.description]
-        print(headers)
-        table = format_results_as_list(headers , myresponse)
-        df = pd.DataFrame(table)
-        df = df.apply(lambda x: x.str.replace('\n', '', regex=False) if x.dtype == "object" else x)
-        print(df.to_csv(f"output/output{i}.csv",index = False , header = False , sep = '|'))
-        table_list.append(df.to_csv(index = False , header = False , sep = '|'))    
-  
-  
-  return {"response" : table_list}
+  return {"response" : table}
   
 
 @app.post("/api/v1/text")

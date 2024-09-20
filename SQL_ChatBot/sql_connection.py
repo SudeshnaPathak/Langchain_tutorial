@@ -37,6 +37,24 @@ def format_results_as_list(headers, rows):
     
     return table_as_list
 
+def format_results_as_markdown(headers, rows):
+    # Create the header row in Markdown format
+    header_row = "|  " + "  |  ".join(str(header).replace('\n',' ') for header in headers) + "  |"
+    
+    # Create the separator row (--- between columns)
+    separator_row = "| " + " | ".join("---" for _ in headers) + " |"
+    
+    # Create the data rows in Markdown format
+    data_rows = ["| " + " | ".join(str(value).replace('\n' , ' ') for value in row) + " |" for row in rows]
+    
+    # Combine the header, separator, and data rows
+    markdown_table = [header_row, separator_row] + data_rows
+    
+    # Join the rows with line breaks to create the final Markdown string
+    markdown_output = "\n".join(markdown_table)
+    
+    return markdown_output
+
 
 
 if __name__ == "__main__":
