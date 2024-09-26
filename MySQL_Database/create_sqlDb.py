@@ -8,10 +8,13 @@ password = os.getenv("db_password")
 localhost = os.getenv("db_host")
 
 # Load the Excel file into a DataFrame
-df = pd.read_excel('Atal_Jal_Disclosed_Ground_Water_Level-2015-2022 (1).xlsx', sheet_name='Atal_Jal_Disclosed_Ground_Water')
+# df = pd.read_excel('ARS_Statistics_Data_of_Guntur ( Andhra Pradesh ).xlsx', sheet_name='ARS_Statistics_Data_of_Guntur (')
+
+#Load the csv file
+df = pd.read_csv('District_wise_Ground_Water_Resources_Data_of_Andhra_Pradesh_State_(In_ham)_of_2020 (1).csv')
 
 # Create a SQLAlchemy engine for MySQL
 engine = create_engine(f'mysql+mysqlconnector://{username}:{password}@{localhost}:3306/jalshaktimodels')
 
 # Convert the DataFrame to a MySQL table
-df.to_sql('ground_water_level-2015-2022', con=engine, if_exists='replace', index=False)
+df.to_sql('ground_water_resources_data', con=engine, if_exists='replace', index=False)

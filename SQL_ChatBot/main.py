@@ -2,6 +2,7 @@
 from typing import List, Any
 import datetime
 import pandas as pd
+import traceback
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from async_generator import async_generator , yield_
@@ -310,8 +311,11 @@ async def get_response(request: QueryRequest):
      
     for i , query in enumerate(response_query_list):
           query = query.replace(';' , '')
+          query = query.replace('\n' , ' ')
+          print(query)
           cursor.execute(query)
           myresponse = list(cursor.fetchall())
+          print(myresponse)
           headers = [i[0] for i in cursor.description]
           print(headers)
           table = format_results_as_markdown(headers , myresponse)
@@ -321,6 +325,7 @@ async def get_response(request: QueryRequest):
           # table_list.append(df.to_csv(index = False , header = False , sep = '|')) 
           print(table)   
   except:
+     print(traceback.format_exc())
      return{"response" : "NA"}
      
   
@@ -342,7 +347,7 @@ async def get_response(request: QueryRequest):
   print("\n")
 
   if 'report' in Question or 'Report' in Question :
-     Question = f"{Question} (the detailed NOC Guidelines, definitions of some technical terms related to groundwater, and generalized Training Opportunities related to Groundwater.)"
+     Question = f"{Question} (the detailed NOC Guidelines, definitions of some technical terms related to groundwater,  and generalized Training Opportunities related to Groundwater.)"
 
      print(Question)
   else:
