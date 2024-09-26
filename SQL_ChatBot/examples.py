@@ -57,7 +57,7 @@ examples= [
         },
         {
             "input": "Provide the pre-monsoon and post-monsoon groundwater levels for all years in a specific village.",
-            "query": "SELECT Village, Well_ID, Pre-monsoon_2015 (meters below ground level), Post-monsoon_2015 (meters below ground level), Pre-monsoon_2016 (meters below ground level), Post-monsoon_2016 (meters below ground level), Pre-monsoon_2017 (meters below ground level), Post-monsoon_2017 (meters below ground level), Pre-monsoon_2018 (meters below ground level), Post-monsoon_2018 (meters below ground level), Pre-monsoon_2019 (meters below ground level), Post-monsoon_2019 (meters below ground level), Pre-monsoon_2020 (meters below ground level), Post-monsoon_2020 (meters below ground level), Pre-monsoon_2021 (meters below ground level), Post-monsoon_2021 (meters below ground level), Pre-monsoon_2022 (meters below ground level), Post-monsoon_2022 (meters below ground level) FROM ground_water_level-2015-2022 WHERE Village = 'Village_X' ORDER BY Well_ID;"
+            "query": "SELECT Village, Well_ID, Pre-monsoon_2015(meters_below_ground_level), Post-monsoon_2015(meters_below_ground_level), Pre-monsoon_2016(meters_below_ground_level), Post-monsoon_2016(meters_below_ground_level), Pre-monsoon_2017(meters_below_ground_level), Post-monsoon_2017(meters_below_ground_level), Pre-monsoon_2018(meters_below_ground_level), Post-monsoon_2018(meters_below_ground_level), Pre-monsoon_2019(meters_below_ground_level), Post-monsoon_2019(meters_below_ground_level), Pre-monsoon_2020(meters_below_ground_level), Post-monsoon_2020(meters_below_ground_level), Pre-monsoon_2021(meters_below_ground_level), Post-monsoon_2021(meters_below_ground_level), Pre-monsoon_2022(meters_below_ground_level), Post-monsoon_2022(meters_below_ground_level) FROM ground_water_level-2015-2022 WHERE Village = 'Village_X' ORDER BY Well_ID;"
         },
         {
             "input": "Retrieve the water contamination levels for a specific state.",
@@ -69,11 +69,11 @@ examples= [
         },
         {
             "input": "List the wells with the deepest groundwater levels in a specific state.",
-            "query": "SELECT Well_ID, State_Name, Well_Depth (meters) FROM ground_water_level-2015-2022 WHERE State_Name = 'State_X' ORDER BY Well_Depth (meters) DESC;"
+            "query": "SELECT Well_ID, State_Name, Well_Depth(meters) FROM ground_water_level-2015-2022 WHERE State_Name = 'State_X' ORDER BY Well_Depth(meters) DESC;"
         },
         {
             "input": "Compare water quality parameters for all monitoring locations in a specific state.",
-            "query": "SELECT Name of Monitoring Location, pH_Max , pH_Min, Conductivity_Max(μmhos/cm),Conductivity_Min(μmhos/cm) ,BOD_Max(mg/L),BOD_Min(mg/L), Nitrate N_Max(mg/L), Nitrate N_Min(mg/L) ,Fluoride_Max(mg/L), Fluoride_Min(mg/L) ,Arsenic_Max(mg/L),Arsenic_Min(mg/L) FROM ground_water_quality_data WHERE State_Name = 'State_X' ORDER BY Name of Monitoring Location;"
+            "query": "SELECT Name of Monitoring Location, pH_Max, pH_Min, Conductivity_Max(μmhos/cm),Conductivity_Min(μmhos/cm), BOD_Max(mg/L), BOD_Min(mg/L), Nitrate_N_Max(mg/L), Nitrate_N_Min(mg/L), Fluoride_Max(mg/L), Fluoride_Min(mg/L), Arsenic_Max(mg/L),Arsenic_Min(mg/L) FROM ground_water_quality_data WHERE State_Name = 'State_X' ORDER BY Name of Monitoring Location;"
         },
         {
             "input": "Identify villages with the highest levels of a specific contaminant in a state.",
