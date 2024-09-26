@@ -1,0 +1,118 @@
+CREATE TABLE `artificial_recharge_structure_data` (
+  `Total_Geographical_Area(Sq.Km.)` double DEFAULT NULL,
+  `Area_Identified_for_ARS(Sq.Km.)` double DEFAULT NULL,
+  `Volume_for_Unsaturated_Zone(MCM)` double DEFAULT NULL,
+  `Available_Sub-surface_Volume_for_ARS(MCM)` double DEFAULT NULL,
+  `Water_Required_for_Recharge(MCM)` double DEFAULT NULL,
+  `Surplus_Water_Required_for_Recharge(MCM)` double DEFAULT NULL,
+  `Disctrict` text,
+  `State` text
+) 
+
+CREATE TABLE `ground_water_level-2015-2022` (
+  `Sr.No.` bigint DEFAULT NULL,
+  `State_Name` text,
+  `District_Name` text,
+  `Block_Name` text,
+  `GP_Name_With_LGD_Code` text,
+  `Village` text,
+  `Site_Name` text,
+  `TYPE` text,
+  `SOURCE` text,
+  `Well_ID` text,
+  `Latitude` double DEFAULT NULL,
+  `Longitude` double DEFAULT NULL,
+  `Well_Depth(meters)` double DEFAULT NULL,
+  `Aquifer` text,
+  `Pre-monsoon_2015(meters below ground level)` double DEFAULT NULL,
+  `Post-monsoon_2015(meters below ground level)` double DEFAULT NULL,
+  `Pre-monsoon_2016(meters below ground level)` double DEFAULT NULL,
+  `Post-monsoon_2016(meters below ground level)` double DEFAULT NULL,
+  `Pre-monsoon_2017(meters below ground level)` double DEFAULT NULL,
+  `Post-monsoon_2017(meters below ground level)` double DEFAULT NULL,
+  `Pre-monsoon_2018(meters below ground level)` double DEFAULT NULL,
+  `Post-monsoon_2018(meters below ground level)` double DEFAULT NULL,
+  `Pre-monsoon_2019(meters below ground level)` double DEFAULT NULL,
+  `Post-monsoon_2019(meters below ground level)` double DEFAULT NULL,
+  `Pre-monsoon_2020(meters below ground level)` double DEFAULT NULL,
+  `Post-monsoon_2020(meters below ground level)` double DEFAULT NULL,
+  `Pre-monsoon_2021(meters below ground level)` double DEFAULT NULL,
+  `Post-monsoon_2021(meters below ground level)` double DEFAULT NULL,
+  `Pre-monsoon_2022(meters below ground level)` text,
+  `Post-monsoon_2022(meters below ground level)` text
+) 
+
+CREATE TABLE `ground_water_quality_data` (
+  `STN_Code` text,
+  `Name_of_Monitoring_Location` text,
+  `State_Name` text,
+  `Temperature_Min` text,
+  `Temperature_Max` text,
+  `pH_Min` text,
+  `pH_Max` text,
+  `Conductivity_Min(μmhos/cm)` text,
+  `Conductivity_Max(μmhos/cm)` text,
+  `BOD_Min(mg/L)` text,
+  `BOD_Max(mg/L)` text,
+  `Nitrate_N_Min(mg/L)` text,
+  `Nitrate_N_Max(mg/L)` text,
+  `Faecal_Coliform_Min(MPN/100ml)` text,
+  `Faecal_Coliform_Max(MPN/100ml)` text,
+  `Total_Coliform_Min(MPN/100ml)` text,
+  `Total_Coliform_Max(MPN/100ml)` text,
+  `Total_Dissolved_Solids_Min(mg/L)` text,
+  `Total_Dissolved_Solids_Max(mg/L)` text,
+  `Fluoride_Min(mg/L)` text,
+  `Fluoride_Max(mg/L)` text,
+  `Arsenic_Min(mg/L)` text,
+  `Arsenic_Max(mg/L)` text
+) 
+
+CREATE TABLE `ground_water_quality_testing` (
+  `S_No` int NOT NULL,
+  `State_Name` varchar(255) DEFAULT NULL,
+  `Total_Sources` int DEFAULT NULL,
+  `Sources_Tested` int DEFAULT NULL,
+  `Sources_Yet_To_Be_Tested` int DEFAULT NULL,
+  `Sources_Found_Safe` int DEFAULT NULL,
+  `Sources_Found_Contaminated` int DEFAULT NULL,
+  `Remedial_Measures_Taken` int DEFAULT NULL,
+  PRIMARY KEY (`S_No`)
+) 
+
+
+CREATE TABLE `ground_water_resources_data` (
+  `State_Name` text,
+  `District_Name` text,
+  `Annaul_Domestic_and_Industry_Draft` double DEFAULT NULL,
+  `Annual_Irrigation_Draft` double DEFAULT NULL,
+  `Annual_Groundwater_Draft(Total)` double DEFAULT NULL,
+  `Annual_Replenishable_Groundwater_Resources(Total)` double DEFAULT NULL,
+  `Natural_Discharge_During_Non-Monsoon_Season` double DEFAULT NULL,
+  `Net_Groundwater_Availability` double DEFAULT NULL,
+  `Projected_Demand_for_Domestic&Industrial_Use_Upto_2025` double DEFAULT NULL,
+  `Groundwater_Availability_for_Future_Irrigation_Use` double DEFAULT NULL,
+  `Stage_of_Goundwater_Development(%)` double DEFAULT NULL,
+  `Classification` text
+) 
+CREATE TABLE `village_water_contamination` (
+  `SNo` int NOT NULL,
+  `State_Name` varchar(255) DEFAULT NULL,
+  `pH` int DEFAULT NULL,
+  `TDS` int DEFAULT NULL,
+  `Turbidity` int DEFAULT NULL,
+  `Chloride` int DEFAULT NULL,
+  `Total_Alkalinity` int DEFAULT NULL,
+  `Total_Hardness` int DEFAULT NULL,
+  `Sulphate` int DEFAULT NULL,
+  `Iron` int DEFAULT NULL,
+  `Total_Arsenic` int DEFAULT NULL,
+  `Fluoride` int DEFAULT NULL,
+  `Nitrate` int DEFAULT NULL,
+  `Residual_Chlorine` int DEFAULT NULL,
+  `Others_Chemical` int DEFAULT NULL,
+  `E_coli` int DEFAULT NULL,
+  `Total_Coliform` int DEFAULT NULL,
+  `Others_Bacteriological` int DEFAULT NULL,
+  PRIMARY KEY (`SNo`)
+)
