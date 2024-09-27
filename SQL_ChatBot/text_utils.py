@@ -31,10 +31,10 @@ llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 # prompt = PromptTemplate(template = prompt_template , input_variables={"context","question"})
 
 prompt = ChatPromptTemplate.from_messages(
-     [
-         ("system", prompt_template),
-         MessagesPlaceholder(variable_name="messages"),
-     ]    
+    [
+        ("system", prompt_template),
+        MessagesPlaceholder(variable_name="messages"),
+    ]    
  )
 
 retriever = db.as_retriever()

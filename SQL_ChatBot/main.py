@@ -48,6 +48,7 @@ model = ChatOpenAI(model="gpt-3.5-turbo-0125")
 # -- Define the session history storage --
 store_sql = {}
 store_text = {}
+store = {}
 
 # -- Define the session history getter --
 def get_session_history_sql(session_id: str) -> BaseChatMessageHistory:
@@ -60,13 +61,18 @@ def get_session_history_text(session_id: str) -> BaseChatMessageHistory:
     store_text[session_id] = InMemoryChatMessageHistory()
   return store_text[session_id]
 
+def get_session_history(session_id: str) -> BaseChatMessageHistory:
+  if session_id not in store:
+    store[session_id] = InMemoryChatMessageHistory()
+  return store[session_id]
+
 # -- Define the chat history trimmer --
 trimmer = trim_messages(
     max_tokens=1000,
     strategy="last",
     token_counter=model,
     include_system=True,
-    allow_partial=False,
+    allow_partial=True,
     start_on="human",
 )
 
@@ -77,20 +83,22 @@ text_chain = text_chain
 # -- Create chain --
 # chain = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer) | prompt | model | parser
 modify_question_chain = itemgetter("question") | question_prompt | model | StrOutputParser()
-chain1 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )| sql_chain 
-chain2 = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer )|text_chain 
+chain_sql = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer ) | sql_chain 
+chain_text = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer ) | text_chain 
 # map_chain = RunnableParallel(text=chain2, sql=chain1)
 
 # -- Create the chain with history --
 chain_with_history_sql = RunnableWithMessageHistory(
-    chain1,
-    get_session_history_sql,
+    chain_sql,
+    # get_session_history_sql,
+    get_session_history,
     input_messages_key="messages",
 )
 
 chain_with_history_text = RunnableWithMessageHistory(
-    chain2,
-    get_session_history_text,
+    chain_text,
+    # get_session_history_text,
+    get_session_history,
     input_messages_key="messages",
 )
 
@@ -304,7 +312,7 @@ async def get_response(request: QueryRequest):
     )
   
   print("Response: " + str(response))
-  response_query_list = response['query'].split("\n\n")
+  response_query_list = response.split("\n\n")
   cursor = sql_cursor()
   table_list = []
   try:
@@ -328,7 +336,7 @@ async def get_response(request: QueryRequest):
      print(traceback.format_exc())
      return{"response" : "NA"}
      
-  
+  print(store_sql)
   return {"response" : table}
   
 
@@ -370,6 +378,7 @@ async def get_response(request: QueryRequest):
     )
   
   print("Response: " + str(response))
+  print(store_text)
   return {"response" : response}
 
 if __name__ == "__main__":
