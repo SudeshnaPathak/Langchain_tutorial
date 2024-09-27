@@ -57,4 +57,10 @@ answer_prompt = PromptTemplate.from_template(
  Answer: """
  )
 
+sql_prompt = PromptTemplate.from_template(
+        """Return the input question exactly as it is as the answer.
+        
+    Question: {query}
+    Answer: """
+)
 

@@ -8,7 +8,7 @@ from operator import itemgetter
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from table_details import table_chain 
-from prompts import final_prompt, answer_prompt
+from prompts import final_prompt, answer_prompt, sql_prompt
 import datetime
 
 load_dotenv()
@@ -30,9 +30,10 @@ llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 
 def get_chain():
     print("Creating chain")
-    generate_query = create_sql_query_chain(llm, db,final_prompt) 
-    execute_query = QuerySQLDataBaseTool(db=db , verbose = True)
-    rephrase_answer = answer_prompt | llm | StrOutputParser()
+    generate_query = create_sql_query_chain(llm, db, final_prompt)
+    exact_chain = sql_prompt | llm | StrOutputParser()
+    # execute_query = QuerySQLDataBaseTool(db=db , verbose = True)
+    # rephrase_answer = answer_prompt | llm | StrOutputParser()
     # chain = (
     # RunnablePassthrough.assign(selected_tables=table_chain) |
     # RunnablePassthrough.assign(query=generate_query).assign(
@@ -42,8 +43,9 @@ def get_chain():
     # )
 
     chain = (
-    RunnablePassthrough.assign(selected_tables=table_chain) |
-    RunnablePassthrough.assign(query=generate_query)
+        RunnablePassthrough.assign(selected_tables=table_chain) |
+        RunnablePassthrough.assign(query=generate_query).assign(
+        result= itemgetter("query")) | exact_chain
     )
 
     return chain 
