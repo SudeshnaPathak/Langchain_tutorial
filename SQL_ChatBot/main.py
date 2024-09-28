@@ -323,7 +323,6 @@ async def get_response(request: QueryRequest):
           print(query)
           cursor.execute(query)
           myresponse = list(cursor.fetchall())
-          print(myresponse)
           headers = [i[0] for i in cursor.description]
           print(headers)
           table = format_results_as_markdown(headers , myresponse)
