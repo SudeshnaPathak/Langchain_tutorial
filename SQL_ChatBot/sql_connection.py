@@ -25,15 +25,16 @@ def sql_cursor():
 
 
 
-def format_results_as_list(headers, rows):
-    # Create the header row as a list
-    header_row = [str(header) for header in headers]
+def format_results_as_list(rows):
+    # # Create the header row as a list
+    # header_row = [str(header) for header in headers]
     
     # Create the data rows as lists without padding for column width
     data_rows = [[str(value) for value in row] for row in rows]
     
     # Combine the header row and the data rows into a final list of lists
-    table_as_list = [header_row] + data_rows
+    # table_as_list = [header_row] + data_rows
+    table_as_list = data_rows
     
     return table_as_list
 

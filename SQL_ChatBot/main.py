@@ -323,7 +323,7 @@ async def get_response(request: QueryRequest):
           print(query)
           cursor.execute(query)
           myresponse = list(cursor.fetchall())
-          headers = [i[0] for i in cursor.description]
+          headers = [i[0].replace('_',' ') for i in cursor.description]
           print(headers)
           table = format_results_as_markdown(headers , myresponse)
           # df = pd.DataFrame(table)
@@ -338,6 +338,57 @@ async def get_response(request: QueryRequest):
   print(store_sql)
   return {"response" : table}
   
+@app.post("/api/v1/sql_dataframe")
+async def get_response(request: QueryRequest):
+  print("\n======================================\n")
+
+  # Extract the query from the request body
+  Question = request.question
+  Language = request.language
+  SessionId = request.sessionid
+
+  print("Question   : " + str(Question))
+  print("Language   : " + str(Language))
+  print("Session ID : " + str(SessionId))
+  print("\n")
+
+  response = chain_with_history_sql.invoke(
+      {
+        "messages": [HumanMessage(content=Question)],
+        "language": Language,
+        "question": Question
+      },
+      config={"configurable": {"session_id": SessionId}},
+    )
+  
+  print("Response: " + str(response))
+  response_query_list = response.split("\n\n")
+  cursor = sql_cursor()
+  table_list = []
+  try:
+     
+    for i , query in enumerate(response_query_list):
+          query = query.replace(';' , '')
+          query = query.replace('\n' , ' ')
+          print(query)
+          cursor.execute(query)
+          myresponse = list(cursor.fetchall())
+          headers = [i[0].replace('_', ' ') for i in cursor.description]
+          print(headers)
+          table = format_results_as_list(myresponse)
+          df = pd.DataFrame(table, columns=headers)
+          df = df.apply(lambda x: x.str.replace('\n', '', regex=False) if x.dtype == "object" else x)
+          # print(df.to_csv(f"output/output{i}.csv",index = False , header = False , sep = '|'))
+          # table_list.append(df.to_csv(index = False , header = False , sep = '|')) 
+          print(df.to_html(index=False))   
+  except:
+     print(traceback.format_exc())
+     return{"response" : "NA"}
+     
+  print(store_sql)
+  return {"response" : df.to_html(index=False)}
+  
+
 
 @app.post("/api/v1/text")
 async def get_response(request: QueryRequest):
