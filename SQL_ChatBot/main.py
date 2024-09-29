@@ -290,7 +290,7 @@ async def get_response(request: QueryRequest):
 
 @app.post("/api/v1/sql")
 async def get_response(request: QueryRequest):
-  print("\n======================================\n")
+  print("\n=================== sql ===================\n")
 
   # Extract the query from the request body
   Question = request.question
@@ -300,6 +300,7 @@ async def get_response(request: QueryRequest):
   print("Question   : " + str(Question))
   print("Language   : " + str(Language))
   print("Session ID : " + str(SessionId))
+  print("Date Time  : " + str(datetime.datetime.now()))
   print("\n")
 
   response = chain_with_history_sql.invoke(
@@ -340,7 +341,7 @@ async def get_response(request: QueryRequest):
   
 @app.post("/api/v1/sql_dataframe")
 async def get_response(request: QueryRequest):
-  print("\n======================================\n")
+  print("\n=================== sql_dataframe ===================\n")
 
   # Extract the query from the request body
   Question = request.question
@@ -350,6 +351,7 @@ async def get_response(request: QueryRequest):
   print("Question   : " + str(Question))
   print("Language   : " + str(Language))
   print("Session ID : " + str(SessionId))
+  print("Date Time  : " + str(datetime.datetime.now()))
   print("\n")
 
   response = chain_with_history_sql.invoke(
@@ -392,7 +394,7 @@ async def get_response(request: QueryRequest):
 
 @app.post("/api/v1/text")
 async def get_response(request: QueryRequest):
-  print("\n======================================\n")
+  print("\n=================== text ===================\n")
 
   # Extract the query from the request body
   Question = request.question
@@ -402,6 +404,7 @@ async def get_response(request: QueryRequest):
   print("Question   : " + str(Question))
   print("Language   : " + str(Language))
   print("Session ID : " + str(SessionId))
+  print("Date Time  : " + str(datetime.datetime.now()))
   print("\n")
 
   if 'report' in Question or 'Report' in Question :
@@ -433,7 +436,7 @@ async def get_response(request: QueryRequest):
 
 @app.post("/api/v1/text_report")
 async def get_response(request: QueryRequest):
-  print("\n======================================\n")
+  print("\n=================== text_report ===================\n")
 
   # Extract the query from the request body
   Question = request.question
@@ -443,6 +446,7 @@ async def get_response(request: QueryRequest):
   print("Question   : " + str(Question))
   print("Language   : " + str(Language))
   print("Session ID : " + str(SessionId))
+  print("Date Time  : " + str(datetime.datetime.now()))
   print("\n")
 
   # question_response = modify_question_chain.invoke(
