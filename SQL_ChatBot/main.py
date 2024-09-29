@@ -21,7 +21,7 @@ import os
 from operator import itemgetter
 from dotenv import load_dotenv
 from langchain_utils import get_chain
-from text_utils import text_chain
+from text_utils import text_chain1 , text_chain2
 from langchain_core.pydantic_v1 import BaseModel, Field
 from Modular_function import newloggingfunction
 from sql_connection import sql_cursor , format_results_as_list , format_results_as_markdown
@@ -78,7 +78,7 @@ trimmer = trim_messages(
 
 
 sql_chain = get_chain()
-text_chain = text_chain
+text_chain = text_chain1
 
 # -- Create chain --
 # chain = RunnablePassthrough.assign(messages=itemgetter("messages") | trimmer) | prompt | model | parser
@@ -426,6 +426,37 @@ async def get_response(request: QueryRequest):
       },
       config={"configurable": {"session_id": SessionId}},
     )
+  
+  print("Response: " + str(response))
+  print(store_text)
+  return {"response" : response}
+
+@app.post("/api/v1/text_report")
+async def get_response(request: QueryRequest):
+  print("\n======================================\n")
+
+  # Extract the query from the request body
+  Question = request.question
+  Language = request.language
+  SessionId = request.sessionid
+
+  print("Question   : " + str(Question))
+  print("Language   : " + str(Language))
+  print("Session ID : " + str(SessionId))
+  print("\n")
+
+  # question_response = modify_question_chain.invoke(
+  #    {
+  #       "question": Question
+  #    }
+  # )
+  # print("Question Response: " + str(question_response))
+
+  response = text_chain2.invoke(
+      {
+        "language": Language,
+        "question": Question
+      },)
   
   print("Response: " + str(response))
   print(store_text)

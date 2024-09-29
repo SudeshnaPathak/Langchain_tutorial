@@ -17,9 +17,8 @@ os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 embeddings = OpenAIEmbeddings()
     
 db = FAISS.load_local("jalshakti_faiss_index", embeddings,allow_dangerous_deserialization=True)
-prompt_template = """
+prompt_template1 = """
     Answer the question as detailed as possible from the provided context, make sure to provide all the details. If the answer is not related to context and if you do not have specific or exact information, just return "NA" only.\n\n.
-    In the user asks to generate a report ingore the 'State Name' and generate the report based on the user question.
     Answer the user question to the best of your ability in proper {language}.
     Answer only from the provided context and not from anywhere else.
     Context:\n {context}?\n
@@ -27,26 +26,54 @@ prompt_template = """
     
     Answer:
     """
+
+prompt_template2 = """
+    Answer the question as detailed as possible from the provided context, make sure to provide all the details. Even if you dont have specific or exact information, provide the best possible response.
+    Answer the user question to the best of your ability in proper {language}.
+    Answer only from the provided context and not from anywhere else.
+    Context:\n {context}?\n
+    Question: \n{question}\n
+    
+    Answer:
+    """
+
 llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 # prompt = PromptTemplate(template = prompt_template , input_variables={"context","question"})
 
-prompt = ChatPromptTemplate.from_messages(
+prompt1 = ChatPromptTemplate.from_messages(
     [
-        ("system", prompt_template),
+        ("system", prompt_template1),
         MessagesPlaceholder(variable_name="messages"),
+    ]    
+ )
+
+prompt2 = ChatPromptTemplate.from_messages(
+    [
+        ("system", prompt_template2)
     ]    
  )
 
 retriever = db.as_retriever()
 
-text_chain = (
+text_chain1 = (
     {
         "context": itemgetter("question") | retriever,
         "question": itemgetter("question"),
         "language": itemgetter("language"),
         "messages":itemgetter("messages")
     }
-    | prompt
+    | prompt1
+    | llm
+    | StrOutputParser()
+)
+
+text_chain2 = (
+    {
+        "context": itemgetter("question") | retriever,
+        "question": itemgetter("question"),
+        "language": itemgetter("language")
+    }
+    | prompt2
     | llm
     | StrOutputParser()
 )
