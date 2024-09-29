@@ -18,7 +18,7 @@ embeddings = OpenAIEmbeddings()
     
 db = FAISS.load_local("jalshakti_faiss_index", embeddings,allow_dangerous_deserialization=True)
 prompt_template = """
-    Answer the question as detailed as possible from the provided context, make sure to provide all the details. If the answer is not related to context, just say "NA" only.\n\n.
+    Answer the question as detailed as possible from the provided context, make sure to provide all the details. If the answer is not related to context and if you do not have specific or exact information, just return "NA" only.\n\n.
     In the user asks to generate a report ingore the 'State Name' and generate the report based on the user question.
     Answer the user question to the best of your ability in proper {language}.
     Answer only from the provided context and not from anywhere else.
