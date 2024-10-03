@@ -26,8 +26,8 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 LANGCHAIN_TRACING_V2 = os.getenv("LANGCHAIN_TRACING_V2")
 LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
 
-llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
-
+# llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+llm = ChatOpenAI(model="gpt-4-turbo", temperature=0)
 def get_chain():
     print("Creating chain")
     generate_query = create_sql_query_chain(llm, db, final_prompt)

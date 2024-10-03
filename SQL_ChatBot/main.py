@@ -43,7 +43,7 @@ os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 # +++++++++++++++++ Model Structure Creation +++++++++++++++++++++++
 
 # -- Chat Model --
-model = ChatOpenAI(model="gpt-3.5-turbo-0125")
+model = ChatOpenAI(model="gpt-4-turbo")
 
 # -- Define the session history storage --
 store_sql = {}

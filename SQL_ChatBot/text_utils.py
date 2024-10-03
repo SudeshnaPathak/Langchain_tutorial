@@ -37,7 +37,7 @@ prompt_template2 = """
     Answer:
     """
 
-llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+llm = ChatOpenAI(model="gpt-4-turbo", temperature=0)
 # prompt = PromptTemplate(template = prompt_template , input_variables={"context","question"})
 
 prompt1 = ChatPromptTemplate.from_messages(
