@@ -43,7 +43,10 @@ os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 # +++++++++++++++++ Model Structure Creation +++++++++++++++++++++++
 
 # -- Chat Model --
-model = ChatOpenAI(model="gpt-4-turbo")
+model1 = os.getenv("model")
+model = ChatOpenAI(model=model1)
+
+
 
 # -- Define the session history storage --
 store_sql = {}
@@ -68,7 +71,7 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
 
 # -- Define the chat history trimmer --
 trimmer = trim_messages(
-    max_tokens=1000,
+    max_tokens=10000,
     strategy="last",
     token_counter=model,
     include_system=True,
@@ -313,31 +316,32 @@ async def get_response(request: QueryRequest):
     )
   
   print("Response: " + str(response))
-  response_query_list = response.split("\n\n")
-  cursor = sql_cursor()
-  table_list = []
-  try:
+  return {"response" : response}
+  # response_query_list = response.split("\n\n")
+  # cursor = sql_cursor()
+  # table_list = []
+  # try:
      
-    for i , query in enumerate(response_query_list):
-          query = query.replace(';' , '')
-          query = query.replace('\n' , ' ')
-          print(query)
-          cursor.execute(query)
-          myresponse = list(cursor.fetchall())
-          headers = [i[0].replace('_',' ') for i in cursor.description]
-          print(headers)
-          table = format_results_as_markdown(headers , myresponse)
-          # df = pd.DataFrame(table)
-          # df = df.apply(lambda x: x.str.replace('\n', '', regex=False) if x.dtype == "object" else x)
-          # print(df.to_csv(f"output/output{i}.csv",index = False , header = False , sep = '|'))
-          # table_list.append(df.to_csv(index = False , header = False , sep = '|')) 
-          print(table)   
-  except:
-     print(traceback.format_exc())
-     return{"response" : "NA"}
+  #   for i , query in enumerate(response_query_list):
+  #         query = query.replace(';' , '')
+  #         query = query.replace('\n' , ' ')
+  #         print(query)
+  #         cursor.execute(query)
+  #         myresponse = list(cursor.fetchall())
+  #         headers = [i[0].replace('_',' ') for i in cursor.description]
+  #         print(headers)
+  #         table = format_results_as_markdown(headers , myresponse)
+  #         # df = pd.DataFrame(table)
+  #         # df = df.apply(lambda x: x.str.replace('\n', '', regex=False) if x.dtype == "object" else x)
+  #         # print(df.to_csv(f"output/output{i}.csv",index = False , header = False , sep = '|'))
+  #         # table_list.append(df.to_csv(index = False , header = False , sep = '|')) 
+  #         print(table)   
+  # except:
+  #    print(traceback.format_exc())
+  #    return {"response" : "NA"}
      
-  print(store_sql)
-  return {"response" : table}
+  # print(store_sql)
+  # return {"response" : table}
   
 @app.post("/api/v1/sql_dataframe")
 async def get_response(request: QueryRequest):
